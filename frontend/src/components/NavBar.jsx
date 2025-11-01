@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
+import axios from "axios";
+
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -7,9 +9,17 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import {Button, Menu, MenuItem} from "@mui/material";
 
+import {API_BASE_URL} from "../config.js";
+
 export default function NavBar() {
-    const auth = false;
+
+    const [auth,setAuth] = useState(false);
     const [anchorEl, setAnchorEl] = React.useState(null);
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setAuth(!!token);
+    }, []);
 
     const handleMenu = (event) => {
         setAnchorEl(event.currentTarget);
@@ -18,6 +28,29 @@ export default function NavBar() {
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        console.log(localStorage.getItem('token'));
+        const response = await axios.post(API_BASE_URL+'/user/auth/logout',{},
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        )
+        if (response.status === 200) {
+            alert("Successfully Logged Out!");
+            localStorage.removeItem('token');
+            setAuth(false);
+            navigate('/');
+        }
+        else{
+            alert("Can not Log out:"+response.data.error);
+        }
+    };
+
 
     return (
             <AppBar position="static">
@@ -58,6 +91,7 @@ export default function NavBar() {
                         <div>
                             <Button
                                 color="inherit"
+                                onClick={handleLogout}
                                 sx={{variant: 'contained'}}>
                                 Log out
                             </Button>
