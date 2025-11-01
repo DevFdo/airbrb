@@ -32,7 +32,7 @@ const Login = () => {
         )
         if (response.status === 200) {
             alert("Successfully Logged In");
-
+            localStorage.setItem('token', response.data.token);
             navigate('/');
         }
         else{
