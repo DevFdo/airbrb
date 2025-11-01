@@ -1,4 +1,6 @@
 import React,{useState} from 'react';
+import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -7,13 +9,41 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 
-
+import { API_BASE_URL } from '../config';
 
 const Register = () => {
+
+    const navigate = useNavigate();
+
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (password !== passwordConfirm) {
+            alert("Passwords don't match");
+            return;
+        }
+        const response = await axios.post(API_BASE_URL+'/user/auth/register', {
+            email: email,
+            password: password,
+            name: name,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }
+        )
+        if (response.status === 200) {
+            alert("User registered successfully");
+            navigate('/login');
+        }
+        else{
+            alert("Can not Register:"+response.data.error);
+        }
+    };
 
     return (
         <Container component="main" maxWidth="sm">
