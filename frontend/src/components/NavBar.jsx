@@ -32,85 +32,86 @@ export default function NavBar() {
     setAnchorEl(null);
   };
 
-    const handleLogout = async (e) => {
-        e.preventDefault();
-        console.log(localStorage.getItem('token'));
-        const response = await axios.post(API_BASE_URL+'/user/auth/logout',{},
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            }
-        )
-        if (response.status === 200) {
-            alert("Successfully Logged Out!");
-            localStorage.removeItem('token');
-            setAuth(false);
-            navigate('/');
+  const handleLogout = async (e) => {
+    e.preventDefault();
+    console.log(localStorage.getItem('token'));
+    const response = await axios.post(API_BASE_URL+'/user/auth/logout',{},
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-        else{
-            alert("Can not Log out:"+response.data.error);
-        }
-    };
+      }
+    )
+    if (response.status === 200) {
+      alert("Successfully Logged Out!");
+      localStorage.removeItem('token');
+      setAuth(false);
+      navigate('/');
+    }
+    else{
+      alert("Can not Log out:"+response.data.error);
+    }
+  };
 
 
-    return (
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        aria-label="menu"
-                        onClick={handleMenu}
-                        sx={{ mr: 2 }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    {auth && (
-                        <div>
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorEl}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                                slotProps={{
-                                    list: {
-                                        'aria-labelledby': 'basic-button',
-                                    },
-                                }}
-                            >
-                                <MenuItem onClick={handleClose}>My Host Listing</MenuItem>
-                                <MenuItem onClick={handleClose}>All Host Listing</MenuItem>
-                            </Menu>
-                        </div>
-                    )}
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={handleMenu}
+          sx={{ mr: 2 }}
+        >
+          <MenuIcon />
+        </IconButton>
+        {auth && (
+          <div>
+            <Menu
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+              slotProps={{
+                list: {
+                  'aria-labelledby': 'basic-button',
+                },
+              }}
+            >
+              <MenuItem onClick={handleClose}>My Host Listing</MenuItem>
+              <MenuItem onClick={handleClose}>All Host Listing</MenuItem>
+            </Menu>
+          </div>
+        )}
 
-                    <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        AIRBRB
-                    </Typography>
-                    {auth && (
-                        <div>
-                            <Button
-                                color="inherit"
-                                onClick={handleLogout}
-                                sx={{variant: 'contained'}}>
-                                Log out
-                            </Button>
-                        </div>
-                    )}
-                    {!auth && (
-                        <div>
-                            <Button color="inherit"
-                                    sx={{ variant: 'contained'}}
-                                    component={Link}
-                                    to="/login">
-                                Get Started
-                            </Button>
-                        </div>
-                    )}
-                </Toolbar>
-            </AppBar>
-    );
+        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        AIRBRB
+        </Typography>
+        {auth && (
+          <div>
+            <Button
+              color="inherit"
+              onClick={handleLogout}
+              sx={{variant: 'contained'}}>
+              Log out
+            </Button>
+          </div>
+        )}
+        {!auth && (
+          <div>
+            <Button
+              color="inherit"
+              sx={{ variant: 'contained'}}
+              component={Link}
+              to="/login">
+              Get Started
+            </Button>
+          </div>
+        )}
+      </Toolbar>
+    </AppBar>
+  );
 }

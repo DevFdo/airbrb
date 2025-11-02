@@ -1,4 +1,3 @@
-import * as React from 'react';
 import NavBar from "../components/NavBar.jsx";
 
 const Home = () => {
