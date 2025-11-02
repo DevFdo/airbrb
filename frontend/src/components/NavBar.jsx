@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect, useState} from "react";
 import {Link, useNavigate} from 'react-router-dom';
 import axios from "axios";
 
@@ -13,21 +14,23 @@ import {API_BASE_URL} from "../config.js";
 
 export default function NavBar() {
 
-    const [auth,setAuth] = useState(false);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        setAuth(!!token);
-    }, []);
+  const [auth,setAuth] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setAuth(!!token);
+  }, []);
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
     const handleLogout = async (e) => {
         e.preventDefault();

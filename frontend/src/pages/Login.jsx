@@ -58,7 +58,7 @@ const Login = () => {
                 </Typography>
                 <Box
                     component="form"
-                    //onSubmit={handleSubmit}
+                    onSubmit={handleSubmit}
                     noValidate
                     sx={{mt:1}}>
                     <TextField
