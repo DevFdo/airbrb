@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -13,10 +13,54 @@ import TextField from "@mui/material/TextField";
 import {Button, Chip, Divider, Pagination, Slider, Typography} from '@mui/material';
 
 import NavBar from "../components/NavBar.jsx";
+import ListingCard from "../components/ListingCard.jsx"
+
+/**
+ * This is a mock sample! Please delete this after integrated with backend!
+ * * */
+
+const data = {
+  listings: [
+    {
+      "id": 56513315,
+      "title": "Oceanside Villa",
+      "owner": "alina@unsw.edu.au",
+      "address": {},
+      "thumbnail": "",
+      "price": 350,
+      "reviews": [
+        {},
+        {}
+      ]
+    },
+    {
+      "id": 56513316,
+      "title": "Cabin in the wood",
+      "owner": "johnathan@unsw.edu.au",
+      "address": {},
+      "thumbnail": "",
+      "price": 350,
+      "reviews": [
+        {}
+      ]
+    },
+    {
+      "id": 56513317,
+      "title": "The Red Mansion",
+      "owner": "pyotr@unsw.edu.au",
+      "address": {},
+      "thumbnail": "",
+      "price": 350,
+      "reviews": [
+        {}
+      ]
+    },
+  ]
+}
 
 const Home = () => {
 
-    // change this to the maximum value of the bed number and minimum number of bed number
+  // change this to the maximum value of the bed number and minimum number of bed number
   const [bedroomRange, setBedroomRange] = useState([1, 6]);
 
   const handleBedroomChange = (event, newValue) => {
@@ -47,7 +91,7 @@ const Home = () => {
         maxWidth="lg"
         padding = {2}
       >
-                <Grid container spacing={2} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+        <Grid container spacing={2} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12}>
             <Paper
               component="form"
@@ -116,6 +160,27 @@ const Home = () => {
               {sortMode === 'asc' && 'Sort Ascending'}
             </Button>
           </Grid>
+        </Grid>
+
+        <Divider>
+          <Chip label="Listings" size="small" />
+        </Divider>
+        
+        <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+          {data.listings.map((listing) => (
+            <Grid item xs={12} sm={6} md={4} key={listing.id}>
+              <ListingCard
+                title={listing.title}
+                userInitial={listing.owner.charAt(0).toUpperCase()}
+                thumbnail={listing.thumbnail}
+                reviewNum={listing.reviews.length}
+              />
+            </Grid>
+          ))}
+        </Grid>
+        {/*Change the pagination count into the count of total pages*/}
+        <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+          <Pagination count={5} />
         </Grid>
       </Container>
     </>
