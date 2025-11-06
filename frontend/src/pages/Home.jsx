@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import dayjs from "dayjs";
+import axios from "axios";
 
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -12,55 +13,40 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
 import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {Button, Chip, Divider, Pagination, Slider, Stack, Typography} from '@mui/material';
+import {Button, Chip, CircularProgress, Divider, Slider, Stack, Typography} from '@mui/material';
 
 import NavBar from "../components/NavBar.jsx";
 import ListingCard from "../components/ListingCard.jsx"
-
-/**
- * This is a mock sample! Please delete this after integrated with backend!
- * * */
-
-const data = {
-  listings: [
-    {
-      "id": 56513315,
-      "title": "Oceanside Villa",
-      "owner": "alina@unsw.edu.au",
-      "address": {},
-      "thumbnail": "",
-      "price": 350,
-      "reviews": [
-        {},
-        {}
-      ]
-    },
-    {
-      "id": 56513316,
-      "title": "Cabin in the wood",
-      "owner": "johnathan@unsw.edu.au",
-      "address": {},
-      "thumbnail": "",
-      "price": 350,
-      "reviews": [
-        {}
-      ]
-    },
-    {
-      "id": 56513317,
-      "title": "The Red Mansion",
-      "owner": "pyotr@unsw.edu.au",
-      "address": {},
-      "thumbnail": "",
-      "price": 350,
-      "reviews": [
-        {}
-      ]
-    },
-  ]
-}
+import {API_BASE_URL} from '../config';
 
 const today = dayjs(new Date());
+
+// Just return the ids
+const fetchListing = async () => {
+  const response = await axios.get(`${API_BASE_URL}/listings`);
+  console.log(response);
+  if (response.status === 200) {
+    const listingsArray = response.data.listings;
+    return listingsArray.map(listing => listing.id);
+  }
+  else{
+    console.log('Error loading listings');
+    return null;
+  }
+}
+
+const fetchListingDetails = async (id) => {
+  console.log(id);
+  const response = await axios.get(`${API_BASE_URL}/listings/${id}`);
+  if (response.status === 200) {
+    console.log(response.data.listings);
+    return response.data.listing;
+  }
+  else{
+    console.log(`Error loading listing!${id}`);
+    return null;
+  }
+}
 
 const Home = () => {
 
@@ -201,22 +187,26 @@ const Home = () => {
           <Chip label="Listings" size="small" />
         </Divider>
         
-        <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
-          {data.listings.map((listing) => (
-            <Grid item xs={12} sm={6} md={4} key={listing.id}>
-              <ListingCard
-                title={listing.title}
-                userInitial={listing.owner.charAt(0).toUpperCase()}
-                thumbnail={listing.thumbnail}
-                reviewNum={listing.reviews.length}
-              />
-            </Grid>
-          ))}
-        </Grid>
-        {/*Change the pagination count into the count of total pages*/}
-        <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
-          <Pagination count={5} />
-        </Grid>
+        {loading && (
+          <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+            <CircularProgress/>
+          </Grid>
+        )}
+        {!loading && (
+          <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+            {listings.map((listing) => (
+              <Grid item xs={12} sm={6} md={4} key={listing.id}>
+                <ListingCard
+                  title={listing.title}
+                  userInitial={listing.owner.charAt(0).toUpperCase()}
+                  thumbnail={listing.thumbnail}
+                  reviewNum={listing.reviews.length}
+                />
+              </Grid>
+            ))}
+          </Grid>
+        )
+        }
       </Container>
     </>
   );
