@@ -128,7 +128,7 @@ const Home = () => {
 
         <Grid container spacing={5} sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12} sm={6} md={3}>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="Select Date"
                 value={null}
