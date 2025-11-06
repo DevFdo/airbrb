@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import dayjs from "dayjs";
 import axios from "axios";
 
@@ -50,18 +50,14 @@ const fetchListingDetails = async (id) => {
 
 const Home = () => {
 
-  const [selectedDates, setSelectedDates] = useState([]);
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDateSelect = (date) => {
-    const dateObj = date instanceof Date ? date : new Date(date);
+  const [maximumPrice, setMaximumPrice] = useState(1000);
+  const [minimumPrice, setMinimumPrice] = useState(100);
 
-    const dateStr = dateObj.toLocaleDateString('en-CA');
-    setSelectedDates((prev) =>
-      prev.includes(dateStr)
-        ? prev.filter((d) => d !== dateStr)
-        : [...prev, dateStr]
-    );
-  };
+  const [maximumBed, setMaximumBed] = useState(6);
+  const [minimumBed, setMinimumBed] = useState(1);
 
   // change this to the maximum value of the bed number and minimum number of bed number
   const [bedroomRange, setBedroomRange] = useState([1, 6]);
@@ -75,6 +71,48 @@ const Home = () => {
 
   const handlePriceChange = (event, newValue) => {
     setPriceRange(newValue);
+  };
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const ids = await fetchListing();
+      const details = await Promise.all(ids.map(fetchListingDetails));
+      setListings(details);
+
+      const maxBed = Math.max(...details.map(listing => listing.metadata.bedroom));
+      setMaximumBed(maxBed);
+
+      const minBed = Math.min(...details.map(listing => listing.metadata.bedroom));
+      setMinimumBed(minBed);
+
+      const maxPrice = Math.max(...details.map(listing => listing.price));
+      setMaximumPrice(maxPrice);
+
+      const minPrice = Math.min(...details.map(listing => listing.price));
+      setMinimumPrice(minPrice);
+
+      setBedroomRange([minBed, maxBed]);
+      setPriceRange([minPrice, maxPrice]);
+
+      setLoading(false);
+    };
+
+    void fetchData();
+  }, []);
+
+
+  const [selectedDates, setSelectedDates] = useState([]);
+
+  const handleDateSelect = (date) => {
+    const dateObj = date instanceof Date ? date : new Date(date);
+
+    const dateStr = dateObj.toLocaleDateString('en-CA');
+    setSelectedDates((prev) =>
+      prev.includes(dateStr)
+        ? prev.filter((d) => d !== dateStr)
+        : [...prev, dateStr]
+    );
   };
 
   const [sortMode, setSortMode] = useState('none');
@@ -129,11 +167,11 @@ const Home = () => {
               value={bedroomRange}
               onChange={handleBedroomChange}
               valueLabelDisplay="auto"
-              min={1}
-              max={6}
+              min={minimumBed}
+              max={maximumBed}
               marks={[
-                { value: 1, label: '1' },
-                { value: 6, label: '6' }
+                { value: minimumBed, label: `${minimumBed}` },
+                { value: maximumBed, label: `${maximumBed}` }
               ]}
             />
           </Grid>
@@ -143,12 +181,12 @@ const Home = () => {
               value={priceRange}
               onChange={handlePriceChange}
               valueLabelDisplay="auto"
-              min={50}
-              max={2000}
+              min={minimumPrice}
+              max={maximumPrice}
               step={50}
               marks={[
-                { value: 50, label: '$50' },
-                { value: 2000, label: '$2000' }
+                { value: minimumPrice, label: `$${minimumPrice}` },
+                { value: maximumPrice, label: `$${maximumPrice}` }
               ]}
             />
           </Grid>
