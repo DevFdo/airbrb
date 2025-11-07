@@ -50,8 +50,10 @@ const fetchListingDetails = async (id) => {
 
 const Home = () => {
 
+
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filteredListings, setFilteredListings] = useState([]);
 
   const [maximumPrice, setMaximumPrice] = useState(1000);
   const [minimumPrice, setMinimumPrice] = useState(100);
@@ -59,26 +61,23 @@ const Home = () => {
   const [maximumBed, setMaximumBed] = useState(6);
   const [minimumBed, setMinimumBed] = useState(1);
 
+  const [searchInput, setSearchInput] = useState('');
   // change this to the maximum value of the bed number and minimum number of bed number
   const [bedroomRange, setBedroomRange] = useState([1, 6]);
-
-  const handleBedroomChange = (event, newValue) => {
-    setBedroomRange(newValue);
-  };
-
   // change this to the minimum price and maximum price
   const [priceRange, setPriceRange] = useState([100, 1000]);
+  const [selectedDates, setSelectedDates] = useState([]);
+  const [sortMode, setSortMode] = useState('none');
 
-  const handlePriceChange = (event, newValue) => {
-    setPriceRange(newValue);
-  };
-
+  /* all the useEffect
+  ************************/
 
   useEffect(() => {
     const fetchData = async () => {
       const ids = await fetchListing();
       const details = await Promise.all(ids.map(fetchListingDetails));
       setListings(details);
+      setFilteredListings(details);
 
       const maxBed = Math.max(...details.map(listing => listing.metadata.bedroom));
       setMaximumBed(maxBed);
@@ -101,8 +100,34 @@ const Home = () => {
     void fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!listings || listings.length === 0) {
+      setFilteredListings([]);
+      return;
+    }
 
-  const [selectedDates, setSelectedDates] = useState([]);
+    const term = searchInput.trim().toLowerCase();
+
+    const result = listings.filter(listing => {
+      const titleMatch = listing.title?.toLowerCase().includes(term);
+      const addressMatch = Object.values(listing.address || {})
+        .some(field => field?.toLowerCase().includes(term));
+      return titleMatch || addressMatch;
+    });
+
+    if (sortMode === 'asc') {
+      console.log('Sorting');
+      result.sort((a, b) => getAverageRating(a.reviews) - getAverageRating(b.reviews));
+    } else if (sortMode === 'desc') {
+      console.log('Sorting');
+      result.sort((a, b) => getAverageRating(b.reviews) - getAverageRating(a.reviews));
+    }
+
+    setFilteredListings(result);
+  }, [searchInput]);
+
+    /* all the onclick functions
+  ************************/
 
   const handleDateSelect = (date) => {
     const dateObj = date instanceof Date ? date : new Date(date);
@@ -114,8 +139,6 @@ const Home = () => {
         : [...prev, dateStr]
     );
   };
-
-  const [sortMode, setSortMode] = useState('none');
 
   const handleSortMode = () => {
     setSortMode((prev) => {
@@ -141,6 +164,8 @@ const Home = () => {
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
                 placeholder="Search destinations"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 inputProps={{ 'aria-label': 'Search destinations' }}
               />
               <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
@@ -165,7 +190,7 @@ const Home = () => {
             <Typography gutterBottom>Bedrooms</Typography>
             <Slider
               value={bedroomRange}
-              onChange={handleBedroomChange}
+              onChange={(e)=>setBedroomRange(e.target.value)}
               valueLabelDisplay="auto"
               min={minimumBed}
               max={maximumBed}
@@ -179,7 +204,7 @@ const Home = () => {
             <Typography gutterBottom>Price Range ($)</Typography>
             <Slider
               value={priceRange}
-              onChange={handlePriceChange}
+              onChange={(e)=>setPriceRange(e.target.value)}
               valueLabelDisplay="auto"
               min={minimumPrice}
               max={maximumPrice}
@@ -232,19 +257,24 @@ const Home = () => {
         )}
         {!loading && (
           <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
-            {listings.map((listing) => (
-              <Grid item xs={12} sm={6} md={4} key={listing.id}>
-                <ListingCard
-                  title={listing.title}
-                  userInitial={listing.owner.charAt(0).toUpperCase()}
-                  thumbnail={listing.thumbnail}
-                  reviewNum={listing.reviews.length}
-                />
-              </Grid>
-            ))}
+            {filteredListings.length > 0 &&(
+              filteredListings.map((listing) => (
+                <Grid item xs={12} sm={6} md={4} key={listing.id}>
+                  <ListingCard
+                    title={listing.title}
+                    userInitial={listing.owner.charAt(0).toUpperCase()}
+                    thumbnail={listing.thumbnail}
+                    reviewNum={listing.reviews.length}
+                  />
+                </Grid>
+                ))
+            )}
+            {filteredListings.length === 0 && (
+              <Typography variant={"h4"} color='textDisabled'>No Listing Published</Typography>
+            )
+            }
           </Grid>
-        )
-        }
+        )}
       </Container>
     </>
   );
