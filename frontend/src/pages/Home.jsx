@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DeleteIcon from '@mui/icons-material/Delete';
 import SortIcon from '@mui/icons-material/Sort';
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
@@ -48,12 +49,25 @@ const fetchListingDetails = async (id) => {
   }
 }
 
+// Calculate date range in fomrat of YYYY-MM-DD
+const getDateRange = (start, end) => {
+  const range = [];
+  let current = dayjs(start);
+  const last = dayjs(end);
+  while (current.isBefore(last) || current.isSame(last)) {
+    range.push(current.format('YYYY-MM-DD'));
+    current = current.add(1, 'day');
+  }
+  return range;
+};
+
 const Home = () => {
 
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filteredListings, setFilteredListings] = useState([]);
+  const [isFilteringDate, setIsFilteringDate] = useState(false);
 
   const [maximumPrice, setMaximumPrice] = useState(1000);
   const [minimumPrice, setMinimumPrice] = useState(100);
@@ -62,11 +76,12 @@ const Home = () => {
   const [minimumBed, setMinimumBed] = useState(1);
 
   const [searchInput, setSearchInput] = useState('');
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   // change this to the maximum value of the bed number and minimum number of bed number
   const [bedroomRange, setBedroomRange] = useState([1, 6]);
   // change this to the minimum price and maximum price
   const [priceRange, setPriceRange] = useState([100, 1000]);
-  const [selectedDates, setSelectedDates] = useState([]);
   const [sortMode, setSortMode] = useState('none');
 
   /* all the useEffect
@@ -112,33 +127,29 @@ const Home = () => {
       const titleMatch = listing.title?.toLowerCase().includes(term);
       const addressMatch = Object.values(listing.address || {})
         .some(field => field?.toLowerCase().includes(term));
-      return titleMatch || addressMatch;
+      const priceMatch = listing.price >= priceRange[0] && listing.price <= priceRange[1];
+      const bedMatch= listing.metadata.bedroom >= bedroomRange[0] && listing.metadata.bedroom <= bedroomRange[1];
+      let dateMatch = true;
+      if (startDate && endDate) {
+        setIsFilteringDate(true)
+        const dateRange = getDateRange(startDate, endDate);
+        const availableDates = listing.availability || [];
+        dateMatch = dateRange.every(date => availableDates.includes(date))
+      }
+      return (titleMatch || addressMatch)&& priceMatch && bedMatch&&dateMatch;
     });
 
-    if (sortMode === 'asc') {
-      console.log('Sorting');
-      result.sort((a, b) => getAverageRating(a.reviews) - getAverageRating(b.reviews));
-    } else if (sortMode === 'desc') {
-      console.log('Sorting');
-      result.sort((a, b) => getAverageRating(b.reviews) - getAverageRating(a.reviews));
-    }
-
     setFilteredListings(result);
-  }, [searchInput]);
+  }, [searchInput,priceRange,bedroomRange,listings,startDate,endDate]);
 
     /* all the onclick functions
   ************************/
 
-  const handleDateSelect = (date) => {
-    const dateObj = date instanceof Date ? date : new Date(date);
-
-    const dateStr = dateObj.toLocaleDateString('en-CA');
-    setSelectedDates((prev) =>
-      prev.includes(dateStr)
-        ? prev.filter((d) => d !== dateStr)
-        : [...prev, dateStr]
-    );
-  };
+    const handleFilteringDate = () =>{
+      setStartDate(null);
+      setEndDate(null);
+      setIsFilteringDate(false);
+    }
 
   const handleSortMode = () => {
     setSortMode((prev) => {
@@ -178,12 +189,27 @@ const Home = () => {
         <Grid container spacing={5} sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12} sm={6} md={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label="Select Date"
-                value={null}
-                onChange={handleDateSelect}
-                minDate={today}
-              />
+            <Stack spacing={2} direction="row">
+                <DatePicker
+                  label="Start Date"
+                  value={startDate}
+                  onChange={(newDate) => setStartDate(newDate)}
+                  minDate={today}
+                  format="YYYY-MM-DD"
+                />
+                <DatePicker
+                  label="End Date"
+                  value={endDate}
+                  onChange={(newDate) => setEndDate(newDate)}
+                  minDate={startDate}
+                  format="YYYY-MM-DD"
+                />
+                {isFilteringDate && (
+                  <IconButton aria-label="delete" size="large" onClick={handleFilteringDate}>
+                    <DeleteIcon fontSize="inherit" />
+                  </IconButton>
+                )}
+              </Stack>
             </LocalizationProvider>
           </Grid>
           <Grid item xs={12} sm={6} md={2}  >
@@ -230,21 +256,6 @@ const Home = () => {
               {sortMode === 'asc' && 'Sort Ascending'}
             </Button>
           </Grid>
-        </Grid>
-        <Grid container spacing={2} sx={{mt: 2, justifyContent: 'center', alignItems: 'center'}}>
-          <Stack direction="row" spacing={1} mt={2} flexWrap="wrap">
-            {selectedDates.map((date) => (
-              <Chip
-                key={date}
-                label={date}
-                onDelete={() =>
-                  setSelectedDates((prev) => prev.filter((d) => d !== date))
-                }
-                color="primary"
-                variant="outlined"
-              />
-            ))}
-          </Stack>
         </Grid>
         <Divider>
           <Chip label="Listings" size="small" />
