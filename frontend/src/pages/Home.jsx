@@ -61,6 +61,13 @@ const getDateRange = (start, end) => {
   return range;
 };
 
+// Calculate average rating of a listing
+const getAverageRating = (reviews) => {
+  if (!reviews || reviews.length === 0) return 0;
+  const total = reviews.reduce((sum, r) => sum + r.score, 0);
+  return total / reviews.length;
+};
+
 const Home = () => {
 
 
@@ -139,8 +146,14 @@ const Home = () => {
       return (titleMatch || addressMatch)&& priceMatch && bedMatch&&dateMatch;
     });
 
+    if (sortMode === 'asc') {
+      result.sort((a, b) => getAverageRating(a.reviews) - getAverageRating(b.reviews));
+    } else if (sortMode === 'desc') {
+      result.sort((a, b) => getAverageRating(b.reviews) - getAverageRating(a.reviews));
+    }
+
     setFilteredListings(result);
-  }, [searchInput,priceRange,bedroomRange,listings,startDate,endDate]);
+  }, [searchInput,priceRange,bedroomRange,listings,startDate,endDate,sortMode]);
 
     /* all the onclick functions
   ************************/
