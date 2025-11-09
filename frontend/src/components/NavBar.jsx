@@ -46,6 +46,7 @@ export default function NavBar() {
     if (response.status === 200) {
       alert("Successfully Logged Out!");
       localStorage.removeItem('token');
+      localStorage.removeItem('email');
       setAuth(false);
       navigate('/');
     }
@@ -81,8 +82,22 @@ export default function NavBar() {
                 },
               }}
             >
-              <MenuItem onClick={handleClose}>My Host Listing</MenuItem>
-              <MenuItem onClick={handleClose}>All Host Listing</MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  navigate('/host/listings');
+                }}
+              >
+                My Hosted Listings
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  navigate('/');
+                }}
+              >
+                All Listings
+              </MenuItem>
             </Menu>
           </div>
         )}
