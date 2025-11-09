@@ -169,6 +169,125 @@ const ListingForm = ({
           </FormControl>
         </Grid>
 
+        {/* thumbnail */}
+        <Grid item xs={12} md={6}>
+          <TextField
+            label="Thumbnail URL (optional)"
+            fullWidth
+            value={thumbnail}
+            onChange={(e) => setThumbnail(e.target.value)}
+          />
+        </Grid>
+
+        {/* YouTube */}
+        <Grid item xs={12} md={6} sx={{maxWidth: 200 }}>
+          <TextField
+            label="YouTube embed URL (optional)"
+            fullWidth
+            value={youtubeUrl}
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+          />
+        </Grid>
+
+        {/* bedroom / bathroom / beds */}
+        <Grid item xs={12} md={2}>
+          <TextField
+            label="Bedrooms"
+            type="number"
+            required
+            fullWidth
+            value={bedroom}
+            onChange={(e) => setBedroom(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TextField
+            label="Bathrooms"
+            type="number"
+            required
+            fullWidth
+            value={bathroom}
+            onChange={(e) => setBathroom(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <TextField
+            label="Total Beds"
+            type="number"
+            required
+            fullWidth
+            value={beds}
+            onChange={(e) => setBeds(e.target.value)}
+          />
+        </Grid>
+
+        {showImagesField && (
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" sx={{ mb: 1 }}>
+              Property images
+            </Typography>
+            <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              sx={{ mb: 1 }}
+            >
+              <TextField
+                label="Image URL"
+                fullWidth
+                value={imageInput}
+                onChange={(e) => setImageInput(e.target.value)}
+              />
+              <Button
+                variant="outlined"
+                onClick={handleAddImage}
+                sx={{ height: '56px' }}
+              >
+                Add
+              </Button>
+            </Stack>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap">
+              {images.map((url) => (
+                <Chip
+                  key={url}
+                  label={url}
+                  onDelete={() => handleDeleteImage(url)}
+                  sx={{ maxWidth: '100%' }}
+                />
+              ))}
+            </Stack>
+          </Grid>
+        )}
+
+        {/* amenities */}
+        <Grid item xs={12}>
+          <Stack 
+            direction={{ xs: 'column', sm: 'row' }} 
+            spacing={2} 
+            sx={{ mb: 1 }}
+          >
+            <TextField
+              label="Amenities"
+              placeholder="e.g. Wi-Fi provided"
+              size="small"
+              fullWidth
+              value={amenityInput}
+              onChange={(e) => setAmenityInput(e.target.value)}
+            />
+            <Button 
+              variant="outlined" 
+              onClick={handleAddAmenity}
+            >
+              Add
+            </Button>
+          </Stack>
+
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            {amenities.map((a) => (
+              <Chip key={a} label={a} onDelete={() => handleDeleteAmenity(a)} />
+            ))}
+          </Stack>
+        </Grid>
 
         <Grid item xs={12}>
           <Button type="submit" variant="contained" size="large">
