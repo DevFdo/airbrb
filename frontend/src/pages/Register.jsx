@@ -39,6 +39,7 @@ const Register = () => {
     if (response.status === 200) {
       alert("User registered successfully");
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('email', email);
       navigate('/login');
     }
     else{
