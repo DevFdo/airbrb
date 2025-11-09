@@ -27,6 +27,7 @@ const Login = () => {
     if (response.status === 200) {
       alert("Successfully Logged In");
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('email', email);
       navigate('/');
     }
     else{
