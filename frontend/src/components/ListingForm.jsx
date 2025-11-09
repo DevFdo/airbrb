@@ -79,6 +79,7 @@ const ListingForm = ({
     };
     onSubmit(payload);
   };
+
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, maxWidth: '1100px', }}>
       <Grid container spacing={3}>
@@ -90,6 +91,89 @@ const ListingForm = ({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
+        </Grid>
+
+        {/* address */}
+        <Grid item xs={12} md={4}>
+          <TextField
+            label="Street"
+            required
+            fullWidth
+            value={street}
+            onChange={(e) => setStreet(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <TextField
+            label="City"
+            required
+            fullWidth
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <TextField
+            label="State"
+            required
+            fullWidth
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <TextField
+            label="Postcode"
+            required
+            fullWidth
+            value={postcode}
+            onChange={(e) => setPostcode(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <TextField
+            label="Country"
+            fullWidth
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+          />
+        </Grid>
+
+        {/* price & type */}
+        <Grid item xs={12} md={3}>
+          <TextField
+            label="Price per night ($)"
+            type="number"
+            required
+            fullWidth
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <FormControl fullWidth required sx={{minWidth: 160 }}>
+            <InputLabel id="property-type-label">Property type</InputLabel>
+            <Select
+              labelId="property-type-label"
+              id="property-type"
+              value={propertyType}
+              label="Property type"
+              onChange={(e) => setPropertyType(e.target.value)}
+            >
+              {PROPERTY_TYPES.map((pt) => (
+                <MenuItem key={pt} value={pt}>
+                  {pt}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+
+        <Grid item xs={12}>
+          <Button type="submit" variant="contained" size="large">
+            {submitLabel}
+          </Button>
         </Grid>
       </Grid>
     </Box>
