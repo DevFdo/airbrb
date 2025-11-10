@@ -13,9 +13,33 @@ import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
 
 
+// helper: turn whatever the user pasted into an actual youtube embed url
+const toYoutubeEmbed = (url) => {
+  if (!url) return '';
 
-const ListingCard = ({title,userInitial,thumbnail,reviewNum}) => {
+  const trimmed = url.trim();
+  // already an embed link
+  if (trimmed.includes('youtube.com/embed/')) {
+    return trimmed;
+  }
 
+  // normal watch link: https://www.youtube.com/watch?v=VIDEO_ID
+  const watchMatch = trimmed.match(/v=([^&]+)/);
+  if (watchMatch) {
+    return `https://www.youtube.com/embed/${watchMatch[1]}`;
+  }
+
+  // short link: https://youtu.be/VIDEO_ID
+  const shortMatch = trimmed.match(/youtu\.be\/([^?]+)/);
+  if (shortMatch) {
+    return `https://www.youtube.com/embed/${shortMatch[1]}`;
+  }
+  return trimmed;
+};
+
+const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
+
+  const embedUrl = toYoutubeEmbed(youtubeUrl);
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardHeader
@@ -32,8 +56,20 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum}) => {
         title={title}
       />
       <CardMedia>
-        {thumbnail ? (
-          <img src={thumbnail} alt={title} style={{ width: '100%', height: '180px', objectFit: 'cover' }} />
+        { embedUrl ? (
+          <iframe
+            src={embedUrl}
+            title={title}
+            style={{ width: '100%', height: '180px', border: 'none' }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : thumbnail ? (
+          <img 
+            src={thumbnail} 
+            alt={title} 
+            style={{ width: '100%', height: '180px', objectFit: 'cover' }} 
+          />
         ) : (
           <Box
             sx={{

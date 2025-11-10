@@ -49,7 +49,7 @@ const fetchListingDetails = async (id) => {
   }
 }
 
-// Calculate date range in fomrat of YYYY-MM-DD
+// Calculate date range in format of YYYY-MM-DD
 const getDateRange = (start, end) => {
   const range = [];
   let current = dayjs(start);
@@ -98,8 +98,10 @@ const Home = () => {
     const fetchData = async () => {
       const ids = await fetchListing();
       const details = await Promise.all(ids.map(fetchListingDetails));
-      setListings(details);
-      setFilteredListings(details);
+
+      const publishedOnly = details.filter((listing) => listing.published);
+      setListings(publishedOnly);
+      setFilteredListings(publishedOnly);
 
       const maxBed = Math.max(...details.map(listing => listing.metadata.bedroom));
       setMaximumBed(maxBed);
@@ -155,14 +157,14 @@ const Home = () => {
     setFilteredListings(result);
   }, [searchInput,priceRange,bedroomRange,listings,startDate,endDate,sortMode]);
 
-    /* all the onclick functions
+  /* all the onclick functions
   ************************/
 
-    const handleFilteringDate = () =>{
-      setStartDate(null);
-      setEndDate(null);
-      setIsFilteringDate(false);
-    }
+  const handleFilteringDate = () =>{
+    setStartDate(null);
+    setEndDate(null);
+    setIsFilteringDate(false);
+  }
 
   const handleSortMode = () => {
     setSortMode((prev) => {
@@ -202,7 +204,7 @@ const Home = () => {
         <Grid container spacing={5} sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12} sm={6} md={3}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <Stack spacing={2} direction="row">
+              <Stack spacing={2} direction="row">
                 <DatePicker
                   label="Start Date"
                   value={startDate}
@@ -289,9 +291,10 @@ const Home = () => {
                     userInitial={listing.owner.charAt(0).toUpperCase()}
                     thumbnail={listing.thumbnail}
                     reviewNum={listing.reviews.length}
+                    youtubeUrl={listing.metadata?.youtubeUrl}
                   />
                 </Grid>
-                ))
+              ))
             )}
             {filteredListings.length === 0 && (
               <Typography variant={"h4"} color='textDisabled'>No Listing Published</Typography>
