@@ -274,12 +274,15 @@ const ListingForm = ({
               value={amenityInput}
               onChange={(e) => setAmenityInput(e.target.value)}
             />
-            <Button 
-              variant="outlined" 
-              onClick={handleAddAmenity}
-            >
-              Add
-            </Button>
+            {amenityInput.trim() !== '' && (
+              <Button
+                variant="outlined"
+                onClick={handleAddAmenity}
+                sx={{ height: '56px' }}
+              >
+                Add
+              </Button>
+            )}
           </Stack>
 
           <Stack direction="row" spacing={1} flexWrap="wrap">
