@@ -78,7 +78,6 @@ const EditListing = () => {
             onSubmit={handleUpdate}
             initialData={listing}
             submitLabel="Save Changes"
-            showImagesField={true}
           />
         )}
       </Container>

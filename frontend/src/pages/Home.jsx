@@ -292,6 +292,7 @@ const Home = () => {
                     thumbnail={listing.thumbnail}
                     reviewNum={listing.reviews.length}
                     youtubeUrl={listing.metadata?.youtubeUrl}
+                    images={listing.metadata?.images}
                   />
                 </Grid>
               ))

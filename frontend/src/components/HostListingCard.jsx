@@ -8,6 +8,9 @@ import PublicOffIcon from '@mui/icons-material/PublicOff';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useState } from 'react';
 
 
 const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) => {
@@ -20,12 +23,29 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
   const price = listing.price || 0;
   const isPublished = listing.published === true;
   const youtubeUrl = listing.metadata?.youtubeUrl;
+  const images = listing.metadata?.images || [];
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const goPrev = () => {
+    setImgIndex((prev) => {
+      if (images.length === 0) return 0;
+      return prev === 0 ? images.length - 1 : prev - 1;
+    });
+  };
+
+  const goNext = () => {
+    setImgIndex((prev) => {
+      if (images.length === 0) return 0;
+      return prev === images.length - 1 ? 0 : prev + 1;
+    });
+  };
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title={listing.title} subheader={propertyType} />
-
+      
       <CardMedia>
+        {/* if youtube url provided use that in listing card for display */}
         {youtubeUrl ? (
           <iframe
             src={youtubeUrl}
@@ -34,19 +54,60 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        ) : listing.thumbnail ? (
+        // otherwise show images with ability to go to next image or previous in a slider
+        ) : images.length > 0 ? (
+        
+          <Box
+            sx={{
+              position: 'relative',
+              width: '100%',
+              height: '160px',
+              overflow: 'hidden',
+              bgcolor: 'grey.100',
+            }}
+          >
+            <img
+              src={images[imgIndex]}
+              alt={listing.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            {images.length > 1 && (
+              <>
+                <IconButton
+                  onClick={goPrev}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 8,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronLeftIcon />
+                </IconButton>
+                <IconButton
+                  onClick={goNext}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    right: 8,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronRightIcon />
+                </IconButton>
+              </>
+            )}
+          </Box>
+        // if no images uploaded, use thumbnail/image place holder
+        ) : (
           <img
             src={listing.thumbnail}
             alt={listing.title}
             style={{ width: '100%', height: '160px', objectFit: 'cover' }}
-          />
-        ) : (
-          <Box
-            sx={{
-              width: '100%',
-              height: '160px',
-              bgcolor: 'grey.200'
-            }}
           />
         )}
       </CardMedia>
