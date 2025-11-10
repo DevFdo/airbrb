@@ -11,6 +11,9 @@ import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useState } from 'react';
 
 
 // helper: turn whatever the user pasted into an actual youtube embed url
@@ -37,9 +40,21 @@ const toYoutubeEmbed = (url) => {
   return trimmed;
 };
 
-const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
+const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images = [],}) => {
 
   const embedUrl = toYoutubeEmbed(youtubeUrl);
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const hasImages = images && images.length > 0;
+
+  const prevImg = () => {
+    setImgIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const nextImg = () => {
+    setImgIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardHeader
@@ -56,7 +71,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
         title={title}
       />
       <CardMedia>
-        { embedUrl ? (
+        {embedUrl ? (
           <iframe
             src={embedUrl}
             title={title}
@@ -64,11 +79,57 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
+        ) : hasImages ? (
+          <Box
+            sx={{
+              position: 'relative',
+              width: '100%',
+              height: '180px',
+              overflow: 'hidden',
+              bgcolor: 'grey.100',
+            }}
+          >
+            <img
+              src={images[imgIndex]}
+              alt={title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            {images.length > 1 && (
+              <>
+                <IconButton
+                  onClick={prevImg}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 6,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronLeftIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  onClick={nextImg}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    right: 6,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronRightIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
+          </Box>
         ) : thumbnail ? (
-          <img 
-            src={thumbnail} 
-            alt={title} 
-            style={{ width: '100%', height: '180px', objectFit: 'cover' }} 
+          <img
+            src={thumbnail}
+            alt={title}
+            style={{ width: '100%', height: '180px', objectFit: 'cover' }}
           />
         ) : (
           <Box
