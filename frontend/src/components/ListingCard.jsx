@@ -38,7 +38,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
   };
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: 300, height: '100%' }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -74,7 +74,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
             <img
               src={slides[imgIndex]}
               alt={title}
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', }}
             />
             {slides.length > 1 && (
               <>
@@ -112,7 +112,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
           <img
             src={PLACEHOLDER_THUMBNAIL}
             alt="placeholder"
-            style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+            style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
           />
         )}
       </CardMedia>
