@@ -49,7 +49,7 @@ const ListingForm = ({
     if (!file) return;
     try {
       const dataUrl = await fileToDataUrl(file);
-      setThumbnail(dataUrl);       // explicit thumbnail
+      setThumbnail(dataUrl); 
     } catch (err) {
       console.error(err);
     } finally {
@@ -291,7 +291,7 @@ const ListingForm = ({
             )}
           </Stack>
           <Typography variant="body2" sx={{ mt: 1 }}>
-            If you don't upload a thumbnail, we'll use the default placeholder image as thumbnail.
+            If you do not upload a thumbnail, the default placeholder image is used as thumbnail.
           </Typography>
           {thumbnail && (
             <Box

@@ -37,31 +37,35 @@ const Register = () => {
       setSnackOpen(true);
       return;
     }
-    const response = await axios.post(API_BASE_URL+'/user/auth/register',
-      {
-        email: email,
-        password: password,
-        name: name,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json'
-        }}
-    )
-    if (response.status === 200) {
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('email', email);
-      navigate('/login');
-      setSnackMsg('User registered successfully');
-      setSnackSeverity('success');
-      setSnackOpen(true);
 
-      // go to login after a moment so user can see the message
-      setTimeout(() => {
+    try {
+      const response = await axios.post(API_BASE_URL+'/user/auth/register',
+        {
+          email: email,
+          password: password,
+          name: name,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 200) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('email', email);
         navigate('/login');
-      }, 700);
-    }
-    else{
+        setSnackMsg('User registered successfully');
+        setSnackSeverity('success');
+        setSnackOpen(true);
+
+        // go to login after a moment so user can see the message
+        setTimeout(() => {
+          navigate('/login');
+        }, 700);
+      }
+    } catch (err) {
       setSnackMsg('Cannot register: ' + (err.response?.data?.error || err.message));
       setSnackSeverity('error');
       setSnackOpen(true);
@@ -146,13 +150,25 @@ const Register = () => {
         </Box>
       </Container>
 
+      {/* Snackbar for messages */}
       <Snackbar
         open={snackOpen}
         autoHideDuration={3000}
         onClose={handleSnackClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ mt: 8 }}
       >
-        <Alert onClose={handleSnackClose} severity={snackSeverity} sx={{ width: '100%' }}>
+        <Alert 
+          onClose={handleSnackClose} 
+          severity={snackSeverity} 
+          variant="filled" 
+          sx={{ 
+            width: '100%',
+            minWidth: 300,
+            fontSize: '0.95rem',
+            boxShadow: 3,
+          }}
+        >
           {snackMsg}
         </Alert>
       </Snackbar>

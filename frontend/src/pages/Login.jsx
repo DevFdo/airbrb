@@ -113,14 +113,25 @@ const Login = () => {
         </Box>
       </Container>
       
-      {/* Snackbar */}
+      {/* Snackbar for messages */}
       <Snackbar
         open={snackOpen}
         autoHideDuration={3000}
         onClose={handleSnackClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ mt: 8 }}
       >
-        <Alert onClose={handleSnackClose} severity={snackSeverity} sx={{ width: '100%' }}>
+        <Alert 
+          onClose={handleSnackClose} 
+          severity={snackSeverity} 
+          variant="filled" 
+          sx={{ 
+            width: '100%',
+            minWidth: 300,
+            fontSize: '0.95rem',
+            boxShadow: 3,
+          }}
+        >
           {snackMsg}
         </Alert>
       </Snackbar>

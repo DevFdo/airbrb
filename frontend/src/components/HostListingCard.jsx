@@ -31,7 +31,7 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
   const hasRealThumbnail =
     thumbnail && thumbnail !== PLACEHOLDER_THUMBNAIL;
 
-  // if we have a real thumbnail, build slides
+  // if we have a real thumbnail, build slider
   const slides = hasRealThumbnail ? [thumbnail, ...images.filter((img) => img !== thumbnail)] : [];
 
 

@@ -19,11 +19,10 @@ export default function NavBar() {
   const [auth,setAuth] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-    // snackbar state
-    const [snackOpen, setSnackOpen] = useState(false);
-    const [snackMsg, setSnackMsg] = useState('');
-    // 'success' | 'error' | 'warning' | 'info'
-    const [snackSeverity, setSnackSeverity] = useState('success'); 
+  // snackbar
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMsg, setSnackMsg] = useState('');
+  const [snackSeverity, setSnackSeverity] = useState('success'); 
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -45,33 +44,34 @@ export default function NavBar() {
   const handleLogout = async (e) => {
     e.preventDefault();
     console.log(localStorage.getItem('token'));
-    const response = await axios.post(API_BASE_URL+'/user/auth/logout',{},
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+    
+    try {
+      const response = await axios.post(API_BASE_URL + '/user/auth/logout', {},
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
         }
+      );
+      
+      if (response.status === 200) {
+        setSnackMsg('Successfully logged out');
+        setSnackSeverity('success');
+        setSnackOpen(true);
+        localStorage.removeItem('token');
+        localStorage.removeItem('email');
+        setAuth(false);
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
       }
-    )
-    if (response.status === 200) {
-      setSnackMsg('Successfully logged out');
-      setSnackSeverity('success');
-      setSnackOpen(true);
-      localStorage.removeItem('token');
-      localStorage.removeItem('email');
-      setAuth(false);
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
-     
-    }
-    else{
+    } catch (err) {
       setSnackMsg('Could not log out: ' + (err.response?.data?.error || err.message));
       setSnackSeverity('error');
       setSnackOpen(true);
     }
   };
-
 
   return (
     <>
@@ -152,9 +152,20 @@ export default function NavBar() {
         open={snackOpen}
         autoHideDuration={3000}
         onClose={handleSnackClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        sx={{ mt: 8 }}
       >
-        <Alert onClose={handleSnackClose} severity={snackSeverity} sx={{ width: '100%' }}>
+        <Alert 
+          onClose={handleSnackClose} 
+          severity={snackSeverity} 
+          variant="filled" 
+          sx={{ 
+            width: '100%',
+            minWidth: 300,
+            fontSize: '0.95rem',
+            boxShadow: 3,
+          }}
+        >
           {snackMsg}
         </Alert>
       </Snackbar>
