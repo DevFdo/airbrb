@@ -8,7 +8,11 @@ import PublicOffIcon from '@mui/icons-material/PublicOff';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useState } from 'react';
 
+const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
 const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) => {
   const reviews = listing.reviews || [];
@@ -20,6 +24,24 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
   const price = listing.price || 0;
   const isPublished = listing.published === true;
   const youtubeUrl = listing.metadata?.youtubeUrl;
+  const images = listing.metadata?.images || [];
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const thumbnail = listing.thumbnail;
+  const hasRealThumbnail =
+    thumbnail && thumbnail !== PLACEHOLDER_THUMBNAIL;
+
+  // if we have a real thumbnail, build slider
+  const slides = hasRealThumbnail ? [thumbnail, ...images.filter((img) => img !== thumbnail)] : [];
+
+
+  const prevImg = () => {
+    setImgIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const nextImg = () => {
+    setImgIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  };
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -34,19 +56,58 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        ) : listing.thumbnail ? (
-          <img
-            src={listing.thumbnail}
-            alt={listing.title}
-            style={{ width: '100%', height: '160px', objectFit: 'cover' }}
-          />
-        ) : (
+        ) : hasRealThumbnail ? (
           <Box
             sx={{
+              position: 'relative',
               width: '100%',
-              height: '160px',
-              bgcolor: 'grey.200'
+              height: 160,
+              overflow: 'hidden',
+              bgcolor: 'grey.100',
             }}
+          >
+            <img
+              src={slides[imgIndex]}
+              alt={listing.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+            {slides.length > 1 && (
+              <>
+                <IconButton
+                  onClick={prevImg}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 6,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronLeftIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  onClick={nextImg}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    right: 6,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronRightIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
+          </Box>
+        ) : (
+          // no real thumbnail → show placeholder
+          <img
+            src={PLACEHOLDER_THUMBNAIL}
+            alt="placeholder"
+            style={{ width: '100%', height: '180px', objectFit: 'cover' }}
           />
         )}
       </CardMedia>

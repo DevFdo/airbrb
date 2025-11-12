@@ -9,39 +9,36 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import MapsHomeWorkIcon from '@mui/icons-material/MapsHomeWork';
 import PendingActionsIcon from '@mui/icons-material/PendingActions';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import { useState } from 'react';
+import { toYoutubeEmbed } from '../utils/helpers';
 
 
-// helper: turn whatever the user pasted into an actual youtube embed url
-const toYoutubeEmbed = (url) => {
-  if (!url) return '';
+const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
-  const trimmed = url.trim();
-  // already an embed link
-  if (trimmed.includes('youtube.com/embed/')) {
-    return trimmed;
-  }
 
-  // normal watch link: https://www.youtube.com/watch?v=VIDEO_ID
-  const watchMatch = trimmed.match(/v=([^&]+)/);
-  if (watchMatch) {
-    return `https://www.youtube.com/embed/${watchMatch[1]}`;
-  }
-
-  // short link: https://youtu.be/VIDEO_ID
-  const shortMatch = trimmed.match(/youtu\.be\/([^?]+)/);
-  if (shortMatch) {
-    return `https://www.youtube.com/embed/${shortMatch[1]}`;
-  }
-  return trimmed;
-};
-
-const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
+const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images = [],}) => {
 
   const embedUrl = toYoutubeEmbed(youtubeUrl);
+
+  const hasRealThumbnail = thumbnail && thumbnail !== PLACEHOLDER_THUMBNAIL;
+  // only creates image slider if there is a thumbnail else placeholder
+  const slides = hasRealThumbnail ? [thumbnail, ...images.filter((img) => img !== thumbnail)] : [];
+
+  const [imgIndex, setImgIndex] = useState(0);
+
+  const prevImg = () => {
+    setImgIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const nextImg = () => {
+    setImgIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  };
+
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: 300, height: '100%' }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -56,7 +53,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
         title={title}
       />
       <CardMedia>
-        { embedUrl ? (
+        {embedUrl ? (
           <iframe
             src={embedUrl}
             title={title}
@@ -64,25 +61,59 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl}) => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        ) : thumbnail ? (
-          <img 
-            src={thumbnail} 
-            alt={title} 
-            style={{ width: '100%', height: '180px', objectFit: 'cover' }} 
-          />
-        ) : (
+        ) : hasRealThumbnail ? (
           <Box
             sx={{
+              position: 'relative',
               width: '100%',
               height: '180px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              bgcolor: 'grey.200'
+              overflow: 'hidden',
+              bgcolor: 'grey.100',
             }}
           >
-            <MapsHomeWorkIcon sx={{ fontSize: 60, color: 'grey.500' }} />
+            <img
+              src={slides[imgIndex]}
+              alt={title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', }}
+            />
+            {slides.length > 1 && (
+              <>
+                <IconButton
+                  onClick={prevImg}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 6,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronLeftIcon fontSize="small" />
+                </IconButton>
+                <IconButton
+                  onClick={nextImg}
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    right: 6,
+                    transform: 'translateY(-50%)',
+                    bgcolor: 'rgba(255,255,255,0.6)',
+                  }}
+                  size="small"
+                >
+                  <ChevronRightIcon fontSize="small" />
+                </IconButton>
+              </>
+            )}
           </Box>
+        ): (
+          // no real thumbnail - always show placeholder thumbnail
+          <img
+            src={PLACEHOLDER_THUMBNAIL}
+            alt="placeholder"
+            style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
+          />
         )}
       </CardMedia>
       <CardContent>
