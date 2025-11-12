@@ -32,7 +32,8 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
     thumbnail && thumbnail !== PLACEHOLDER_THUMBNAIL;
 
   // if we have a real thumbnail, build slides
-  const slides = hasRealThumbnail ? [thumbnail, ...images] : [];
+  const slides = hasRealThumbnail ? [thumbnail, ...images.filter((img) => img !== thumbnail)] : [];
+
 
   const prevImg = () => {
     setImgIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));

@@ -47,7 +47,8 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
 
   const hasRealThumbnail = thumbnail && thumbnail !== PLACEHOLDER_THUMBNAIL;
   // only creates image slider if there is a thumbnail else placeholder
-  const slides = hasRealThumbnail ? [thumbnail, ...images] : [];
+  const slides = hasRealThumbnail ? [thumbnail, ...images.filter((img) => img !== thumbnail)] : [];
+
   const [imgIndex, setImgIndex] = useState(0);
 
   const prevImg = () => {
@@ -93,7 +94,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
             }}
           >
             <img
-              src={images[imgIndex]}
+              src={slides[imgIndex]}
               alt={title}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
