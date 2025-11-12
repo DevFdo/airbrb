@@ -128,8 +128,43 @@ const ListingForm = ({
     };
     onSubmit(payload);
   };
+  
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, maxWidth: 1100 }}> 
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3, maxWidth: 1100 }}>
+      {/* ROW 1: title + property type */}
+      <Box
+        sx={{
+          display: 'grid',
+          gridTemplateColumns: '3fr 1fr',
+          columnGap: 2,
+          rowGap: 0,
+          mb: 3,
+        }}
+      >
+        <TextField
+          label="Listing Title"
+          required
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          fullWidth
+        />
+        <FormControl fullWidth required>
+          <InputLabel id="property-type-label">Property type</InputLabel>
+          <Select
+            labelId="property-type-label"
+            value={propertyType}
+            label="Property type"
+            onChange={(e) => setPropertyType(e.target.value)}
+          >
+            {PROPERTY_TYPES.map((pt) => (
+              <MenuItem key={pt} value={pt}>
+                {pt}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      </Box>
+  
       {/* ROW 2: address */}
       <Box
         sx={{
