@@ -12,6 +12,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useState } from 'react';
 
+const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
 const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) => {
   const reviews = listing.reviews || [];
@@ -26,26 +27,26 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
   const images = listing.metadata?.images || [];
   const [imgIndex, setImgIndex] = useState(0);
 
-  const goPrev = () => {
-    setImgIndex((prev) => {
-      if (images.length === 0) return 0;
-      return prev === 0 ? images.length - 1 : prev - 1;
-    });
+  const thumbnail = listing.thumbnail;
+  const hasRealThumbnail =
+    thumbnail && thumbnail !== PLACEHOLDER_THUMBNAIL;
+
+  // if we have a real thumbnail, build slides
+  const slides = hasRealThumbnail ? [thumbnail, ...images] : [];
+
+  const prevImg = () => {
+    setImgIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  const goNext = () => {
-    setImgIndex((prev) => {
-      if (images.length === 0) return 0;
-      return prev === images.length - 1 ? 0 : prev + 1;
-    });
+  const nextImg = () => {
+    setImgIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <CardHeader title={listing.title} subheader={propertyType} />
-      
+
       <CardMedia>
-        {/* if youtube url provided use that in listing card for display */}
         {youtubeUrl ? (
           <iframe
             src={youtubeUrl}
@@ -54,60 +55,58 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           />
-        // otherwise show images with ability to go to next image or previous in a slider
-        ) : images.length > 0 ? (
-        
+        ) : hasRealThumbnail ? (
           <Box
             sx={{
               position: 'relative',
               width: '100%',
-              height: '160px',
+              height: 160,
               overflow: 'hidden',
               bgcolor: 'grey.100',
             }}
           >
             <img
-              src={images[imgIndex]}
+              src={slides[imgIndex]}
               alt={listing.title}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
-            {images.length > 1 && (
+            {slides.length > 1 && (
               <>
                 <IconButton
-                  onClick={goPrev}
+                  onClick={prevImg}
                   sx={{
                     position: 'absolute',
                     top: '50%',
-                    left: 8,
+                    left: 6,
                     transform: 'translateY(-50%)',
                     bgcolor: 'rgba(255,255,255,0.6)',
                   }}
                   size="small"
                 >
-                  <ChevronLeftIcon />
+                  <ChevronLeftIcon fontSize="small" />
                 </IconButton>
                 <IconButton
-                  onClick={goNext}
+                  onClick={nextImg}
                   sx={{
                     position: 'absolute',
                     top: '50%',
-                    right: 8,
+                    right: 6,
                     transform: 'translateY(-50%)',
                     bgcolor: 'rgba(255,255,255,0.6)',
                   }}
                   size="small"
                 >
-                  <ChevronRightIcon />
+                  <ChevronRightIcon fontSize="small" />
                 </IconButton>
               </>
             )}
           </Box>
-        // if no images uploaded, use thumbnail/image place holder
         ) : (
+          // no real thumbnail → show placeholder
           <img
-            src={listing.thumbnail}
-            alt={listing.title}
-            style={{ width: '100%', height: '160px', objectFit: 'cover' }}
+            src={PLACEHOLDER_THUMBNAIL}
+            alt="placeholder"
+            style={{ width: '100%', height: '180px', objectFit: 'cover' }}
           />
         )}
       </CardMedia>
