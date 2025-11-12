@@ -13,33 +13,11 @@ import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useState } from 'react';
+import { toYoutubeEmbed } from '../utils/helpers';
 
 
 const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
-// helper: turn whatever the user pasted into an actual youtube embed url
-const toYoutubeEmbed = (url) => {
-  if (!url) return '';
-
-  const trimmed = url.trim();
-  // already an embed link
-  if (trimmed.includes('youtube.com/embed/')) {
-    return trimmed;
-  }
-
-  // normal watch link: https://www.youtube.com/watch?v=VIDEO_ID
-  const watchMatch = trimmed.match(/v=([^&]+)/);
-  if (watchMatch) {
-    return `https://www.youtube.com/embed/${watchMatch[1]}`;
-  }
-
-  // short link: https://youtu.be/VIDEO_ID
-  const shortMatch = trimmed.match(/youtu\.be\/([^?]+)/);
-  if (shortMatch) {
-    return `https://www.youtube.com/embed/${shortMatch[1]}`;
-  }
-  return trimmed;
-};
 
 const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images = [],}) => {
 

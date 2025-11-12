@@ -3,27 +3,10 @@ import {
   Box, Grid, TextField, MenuItem, Typography, Stack, Chip, Button, FormControl, InputLabel, Select, IconButton
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { fileToDataUrl } from '../utils/helpers';
 
 const PROPERTY_TYPES = ['Apartment', 'House', 'Cabin', 'Studio', 'Townhouse'];
 const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
-
-// helper: file -> data URL
-const fileToDataUrl = (file) => {
-  const validFileTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-  const valid = validFileTypes.find((type) => type === file.type);
-  if (!valid) {
-    throw Error('provided file is not a png, jpg or jpeg image.');
-  }
-
-  const reader = new FileReader();
-  const dataUrlPromise = new Promise((resolve, reject) => {
-    reader.onerror = reject;
-    reader.onload = () => resolve(reader.result);
-  });
-  reader.readAsDataURL(file);
-  return dataUrlPromise;
-};
-
 
 const ListingForm = ({ 
   onSubmit, 
