@@ -7,6 +7,8 @@ import HostedListings from './pages/HostedListings.jsx';
 import CreateListing from './pages/CreateListing.jsx';
 import EditListing from './pages/EditListing.jsx';
 
+import ListingDetail  from "./pages/ListingDetail.jsx";
+
 function App() {
   return (
     <Routes>

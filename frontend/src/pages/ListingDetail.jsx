@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useLocation, useParams} from 'react-router-dom';
 import dayjs from 'dayjs'
 
-import {Button, Chip, CircularProgress, Divider} from "@mui/material";
+import {Button, Chip, CircularProgress} from "@mui/material";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import BathtubIcon from '@mui/icons-material/Bathtub';
@@ -63,11 +63,11 @@ const ListingDetail = () => {
             }}>
             </Box>
             <Box flex={1}
-                 sx={{
-                   display:'flex',
-                   flexDirection: 'column',
-                   justifyContent: 'center',
-                 }}>
+              sx={{
+                display:'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+              }}>
               <Typography variant="h3" gutterBottom>{detail.title}</Typography>
   
               <Typography variant="h5" color="text.secondary">
@@ -92,7 +92,7 @@ const ListingDetail = () => {
                 <BedIcon
                   titleAccess="number of bedrooms"
                   sx={{ verticalAlign: 'middle', mr: 1 }} />
-                 {detail.metadata.bedroom} |
+                {detail.metadata.bedroom} |
                 <BathtubIcon
                   titleAccess="number of bathrooms"
                   sx={{ verticalAlign: 'middle', mr: 1 }} />
@@ -103,8 +103,8 @@ const ListingDetail = () => {
                   <Typography variant="body1" mt={1} fontWeight="bold" >Amenities:</Typography>
                   <Box display="flex" flexWrap="wrap" gap={1}>
                     {detail.metadata.amenities.map((label, index) => (
-                        <Chip variant="outlined" label={label} key={index} />
-                      ))
+                      <Chip variant="outlined" label={label} key={index} />
+                    ))
                     }
                   </Box>
                 </Box>
@@ -122,8 +122,8 @@ const ListingDetail = () => {
               )}
               {!auth && (
                 <Link href="/login"
-                      variant="body2"
-                      sx={{mt:3}}
+                  variant="body2"
+                  sx={{mt:3}}
                 >
                   {"Please login to make a booking!"}
                 </Link>
@@ -133,7 +133,7 @@ const ListingDetail = () => {
         </Container>
       )}
     </>
-    )
+  )
 }
 
 export default ListingDetail;

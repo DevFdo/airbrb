@@ -187,38 +187,36 @@ const Home = () => {
           <Grid item xs={12} sm={6} md={3}>
             <Stack spacing={2} direction="row" sx={{alignItems:'center'}} >
               <TextField
-                  label="Start Date"
-                  type="date"
-                  size="small"
-                  value={startDate}
-                  InputLabelProps={{ shrink: true }}
-                  inputProps={{
-                    min: dayjs().format('YYYY-MM-DD')
-                  }}
-                  onChange={(e) => {
-                    const newStart = e.target.value;
-                    if (dayjs(newStart).isAfter(dayjs(startDate))) {
-                      setEndDate('');
-                    }
-                    setStartDate(newStart);
-                  }}
-                />
-                <TextField
-                  label="End"
-                  type="date"
-                  size="small"
-                  value={endDate}
-                  InputLabelProps={{ shrink: true }}
-                  inputProps={{
-                    min: startDate,
-                  }}
-                  onChange={(e) => setEndDate(e.target.value)}
-                />
-                {isFilteringDate && (
-                  <IconButton aria-label="delete" size="large" onClick={handleFilteringDate}>
-                    <DeleteIcon fontSize="inherit" />
-                  </IconButton>
-                )}
+                label="Start Date"
+                type="date"
+                size="small"
+                value={startDate}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{
+                  min: dayjs().format('YYYY-MM-DD')
+                }}
+                onChange={(e) => {
+                  const newStart = e.target.value;
+                  if (dayjs(newStart).isAfter(dayjs(startDate))) {
+                    setEndDate('');
+                  }
+                  setStartDate(newStart);
+                }}
+              />
+              <TextField
+                label="End"
+                type="date"
+                size="small"
+                value={endDate}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{min: startDate,}}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+              {isFilteringDate && (
+                <IconButton aria-label="delete" size="large" onClick={handleFilteringDate}>
+                  <DeleteIcon fontSize="inherit" />
+                </IconButton>
+              )}
             </Stack>
           </Grid>
           <Grid item xs={12} sm={6} md={2}  >
