@@ -33,7 +33,7 @@ const EditListing = () => {
   const handleUpdate = async (payload) => {
     try {
       await api.updateListing(id,payload);
-      navigate('/host/listings');
+      navigate(-1);
     } catch (err) {
       console.error(err);
       setErrorMsg('Failed to update listing');

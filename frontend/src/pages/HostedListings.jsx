@@ -104,6 +104,10 @@ const HostedListings = () => {
     }
   };
 
+  const handleNavigate = (id) =>{
+    navigate(`/detail/${id}`);
+  }
+
   return (
     <>
       <NavBar />
@@ -140,6 +144,7 @@ const HostedListings = () => {
                   onDelete={() => handleDelete(listing.id)}
                   onPublish={() => openPublishDialog(listing)}
                   onUnpublish={() => handleUnpublish(listing.id)}
+                  onClick={() => handleNavigate(listing.id)}
                 />
               </Grid>
             ))}
