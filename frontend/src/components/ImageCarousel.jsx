@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, IconButton } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
@@ -36,9 +36,9 @@ const ImageCarousel = ({ images }) => {
         />
       ) : (
         <img
-        src={PLACEHOLDER_THUMBNAIL}
-        alt="placeholder"
-        style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+          src={PLACEHOLDER_THUMBNAIL}
+          alt="placeholder"
+          style={{ width: '100%', height: '180px', objectFit: 'cover' }}
         />
       )}
 

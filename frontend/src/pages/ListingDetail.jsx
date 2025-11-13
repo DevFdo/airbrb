@@ -2,8 +2,7 @@ import {useEffect, useState} from 'react'
 import {useLocation, useParams} from 'react-router-dom';
 import dayjs from 'dayjs'
 
-import {Button, Chip, CircularProgress} from "@mui/material";
-import Box from "@mui/material/Box";
+import {Box, Button, Chip, CircularProgress, Divider, List} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
@@ -13,6 +12,8 @@ import Link from "@mui/material/Link";
 
 import * as api from '../utils/api.js'
 import NavBar from "../components/NavBar.jsx";
+import ImageCarousel from "../components/ImageCarousel.jsx"
+import ReviewItems from "../components/ReviewItems.jsx"
 
 const ListingDetail = () => {
   const { listingId } = useParams();
@@ -61,6 +62,7 @@ const ListingDetail = () => {
               alignItems: 'center',
               justifyContent: 'center'
             }}>
+              <ImageCarousel images={detail.metadata.images} />
             </Box>
             <Box flex={1}
               sx={{
@@ -129,6 +131,21 @@ const ListingDetail = () => {
                 </Link>
               )}
             </Box>
+          </Box>
+          <Box mt={3}>
+            <Typography variant="body1" fontWeight="bold">
+              Reviews:
+            </Typography>
+            <List>
+              {
+                detail.reviews.map((review,index)=>(
+                  <Box key={index}>
+                    <ReviewItems review={review}/>
+                    {index < detail.reviews.length - 1 && <Divider />}
+                  </Box>
+                ))
+              }
+            </List>
           </Box>
         </Container>
       )}
