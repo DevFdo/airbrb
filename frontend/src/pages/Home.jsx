@@ -274,7 +274,7 @@ const Home = () => {
           </Grid>
         )}
         {!loading && (
-          <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+          <Grid container spacing={5} sx={{ mt: 4,mb:4, alignItems: 'center' }}>
             {filteredListings.length > 0 &&(
               filteredListings.map((listing) => (
                 <Grid item xs={12} sm={6} md={4} key={listing.id}>

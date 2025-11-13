@@ -38,7 +38,7 @@ const ImageCarousel = ({ images }) => {
         <img
           src={PLACEHOLDER_THUMBNAIL}
           alt="placeholder"
-          style={{ width: '100%', height: '180px', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
       )}
 

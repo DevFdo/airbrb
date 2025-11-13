@@ -1,25 +1,24 @@
 import {useEffect, useState} from 'react'
-import {useLocation, useParams} from 'react-router-dom';
+import {useLocation,useNavigate, useParams} from 'react-router-dom';
 import dayjs from 'dayjs'
 
-import {Box, Button, Chip, CircularProgress, Divider, List} from "@mui/material";
-import Typography from "@mui/material/Typography";
+import {Alert, Box, Button, Chip, CircularProgress, Container, Divider, Link, List, Typography} from "@mui/material";
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
 import HotelIcon from '@mui/icons-material/Hotel';
-import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
 
 import * as api from '../utils/api.js'
 import NavBar from "../components/NavBar.jsx";
 import ImageCarousel from "../components/ImageCarousel.jsx"
-import ReviewItems from "../components/ReviewItems.jsx"
+import ReviewItems from "../components/ReviewItem.jsx"
+import ReviewForm from "../components/ReviewForm.jsx"
 
 const ListingDetail = () => {
+  const navigate = useNavigate();
   const { listingId } = useParams();
   const [detail, setDetail] = useState(null);
   const [auth,setAuth] = useState(false);
-
+  const [errorMsg, setErrorMsg] = useState('');
   const email=localStorage.getItem("email");
 
   const location = useLocation();
@@ -48,11 +47,27 @@ const ListingDetail = () => {
     setAuth(!!token);
   }, []);
 
+  const handleDelete = async () =>{
+    try {
+      await api.deleteListing(listingId);
+      navigate(-1);
+    } catch (_err) {
+      setErrorMsg('Failed to delete listing');
+    }
+  }
+
+  
+  
   return(
     <>
       <NavBar />
       {!detail && (
         <CircularProgress/>
+      )}
+      {errorMsg && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {errorMsg}
+        </Alert>
       )}
       {detail && (
         <Container>
@@ -114,8 +129,19 @@ const ListingDetail = () => {
               {auth && (
                 email === detail.owner ? (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-                    <Button variant="outlined" color="primary">Edit</Button>
-                    <Button variant="outlined" color="error">Delete</Button>
+                    <Button variant="outlined" color="primary"
+                      onClick={() => navigate(`/host/listings/${listingId}/edit`)}>
+                      Edit
+                    </Button>
+                    <Button variant="outlined" color="error"
+                      onClick={handleDelete}>
+                      Delete
+                    </Button>
+                    {detail.published ?(
+                      <Button variant="outlined" color="error">Unpublish</Button>
+                    ):(
+                      <Button variant="outlined" color="primary">Publish</Button>
+                    )}
                   </Box>
                 ) : (
                   <Button variant="contained" sx={{ mt: 3 }}>Book Now</Button>
@@ -133,6 +159,16 @@ const ListingDetail = () => {
             </Box>
           </Box>
           <Box mt={3}>
+            {auth && (
+              email !== detail.owner &&(
+                <Box >
+                  <Typography variant="body1" fontWeight="bold">
+                    Enjoy your stay? Please leave us a review!
+                  </Typography>
+                  <ReviewForm />
+                </Box>
+              )
+            )}
             <Typography variant="body1" fontWeight="bold">
               Reviews:
             </Typography>
