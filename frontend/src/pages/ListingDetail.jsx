@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {useLocation,useNavigate, useParams} from 'react-router-dom';
 import dayjs from 'dayjs'
 
-import {Alert, Box, Button, Chip, CircularProgress, Container, Divider, Link, List, Typography} from "@mui/material";
+import {Alert, Box, Button, Chip, CircularProgress, Container, Dialog, DialogTitle, DialogContent, DialogActions, Divider, Link, List, Typography} from "@mui/material";
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
 import HotelIcon from '@mui/icons-material/Hotel';
@@ -12,6 +12,8 @@ import NavBar from "../components/NavBar.jsx";
 import ImageCarousel from "../components/ImageCarousel.jsx"
 import ReviewItems from "../components/ReviewItem.jsx"
 import ReviewForm from "../components/ReviewForm.jsx"
+import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
+
 
 const ListingDetail = () => {
   const navigate = useNavigate();
@@ -19,7 +21,28 @@ const ListingDetail = () => {
   const [detail, setDetail] = useState(null);
   const [auth,setAuth] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const email=localStorage.getItem("email");
+  const [availabilityRanges, setAvailabilityRanges] = useState([
+    {
+      start: dayjs().format('YYYY-MM-DD'),
+      end: dayjs().add(1, 'day').format('YYYY-MM-DD'),
+    },
+  ]);
+
+  const expandRangesToDates = (ranges) => {
+    const allDates = [];
+    ranges.forEach((r) => {
+      const start = dayjs(r.start);
+      const end = dayjs(r.end);
+      let cur = start;
+      while (cur.isBefore(end) || cur.isSame(end)) {
+        allDates.push(cur.format('YYYY-MM-DD'));
+        cur = cur.add(1, 'day');
+      }
+    });
+    return allDates;
+  };
 
   const location = useLocation();
   const rawStart = location.state?.startDate;
@@ -28,17 +51,18 @@ const ListingDetail = () => {
   const startDate = rawStart ? dayjs(rawStart) : null;
   const endDate = rawEnd ? dayjs(rawEnd) : null;
 
+  const loadDetail = async () => {
+    const data = await api.fetchListingDetails(listingId);
+    if(startDate&&endDate){
+      const stayLength = startDate.isValid() && endDate.isValid()
+        ? endDate.diff(startDate, 'day')
+        : 1;
+      data.totalPrice = data.price * stayLength;
+    }
+    setDetail(data);
+  };
+
   useEffect(() => {
-    const loadDetail = async () => {
-      const data = await api.fetchListingDetails(listingId);
-      if(startDate&&endDate){
-        const stayLength = startDate.isValid() && endDate.isValid()
-          ? endDate.diff(startDate, 'day')
-          : 1;
-        data.totalPrice = data.price * stayLength;
-      }
-      setDetail(data);
-    };
     void loadDetail();
   }, [listingId]);
 
@@ -46,6 +70,16 @@ const ListingDetail = () => {
     const token = localStorage.getItem('token');
     setAuth(!!token);
   }, []);
+
+  const openPublishDialog = () => {
+    setAvailabilityRanges([
+      {
+        start: dayjs().format('YYYY-MM-DD'),
+        end: dayjs().add(1, 'day').format('YYYY-MM-DD'),
+      },
+    ]);
+    setPublishDialogOpen(true);
+  };
 
   const handleDelete = async () =>{
     try {
@@ -56,7 +90,30 @@ const ListingDetail = () => {
     }
   }
 
-  
+  const handlePublish = async () => {
+    const flatDates = expandRangesToDates(availabilityRanges);
+    if (flatDates.length === 0) {
+      setErrorMsg('Please add at least one availability range.');
+      return;
+    }
+    try {
+      await api.publishListing(listingId,flatDates);
+      setPublishDialogOpen(false);
+      void loadDetail();
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('Failed to publish listing');
+    }
+  };
+
+  const handleUnpublish = async () => {
+    try {
+      await api.unpublishListing(listingId);
+      void loadDetail();
+    } catch (_err) {
+      setErrorMsg('Failed to unpublish listing');
+    }
+  };
   
   return(
     <>
@@ -129,18 +186,31 @@ const ListingDetail = () => {
               {auth && (
                 email === detail.owner ? (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-                    <Button variant="outlined" color="primary"
+                    <Button 
+                      variant="outlined" 
+                      color="primary"
                       onClick={() => navigate(`/host/listings/${listingId}/edit`)}>
                       Edit
                     </Button>
-                    <Button variant="outlined" color="error"
-                      onClick={handleDelete}>
+                    <Button 
+                      variant="outlined"
+                      color="error"
+                      onClick={()=>handleDelete()}>
                       Delete
                     </Button>
                     {detail.published ?(
-                      <Button variant="outlined" color="error">Unpublish</Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        onClick={() => handleUnpublish()}>
+                          Unpublish</Button>
                     ):(
-                      <Button variant="outlined" color="primary">Publish</Button>
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={()=>openPublishDialog()}>
+                          Publish
+                      </Button>
                     )}
                   </Box>
                 ) : (
@@ -183,6 +253,21 @@ const ListingDetail = () => {
               }
             </List>
           </Box>
+          <Dialog open={publishDialogOpen} onClose={() => setPublishDialogOpen(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>Set Availability & Publish</DialogTitle>
+            <DialogContent>
+              <AvailabilityEditor
+                availability={availabilityRanges}
+                setAvailability={setAvailabilityRanges}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setPublishDialogOpen(false)}>Cancel</Button>
+              <Button variant="contained" onClick={handlePublish}>
+                Publish
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Container>
       )}
     </>

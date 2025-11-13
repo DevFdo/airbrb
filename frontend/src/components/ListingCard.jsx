@@ -39,7 +39,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
 
   return (
     <Card sx={{ width: 250,cursor: 'pointer'}}
-    onClick={onClick}>
+      onClick={onClick}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
