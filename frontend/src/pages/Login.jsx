@@ -1,5 +1,4 @@
 import {useState} from 'react';
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 import Button from "@mui/material/Button";
@@ -12,7 +11,7 @@ import Container from "@mui/material/Container";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
-import { API_BASE_URL } from '../config';
+import * as api from "../utils/api.js"
 
 const Login = () => {
     
@@ -30,10 +29,7 @@ const Login = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await axios.post(API_BASE_URL+'/user/auth/login', {
-      email: email, password: password,},
-    {headers: {'Content-Type': 'application/json'}}
-    )
+    const response = await api.login(email,password);
     if (response.status === 200) {
       setSnackMsg('Successfully logged in');
       setSnackSeverity('success');

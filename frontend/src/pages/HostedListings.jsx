@@ -10,6 +10,7 @@ import NavBar from '../components/NavBar.jsx';
 import HostListingCard from '../components/HostListingCard.jsx';
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
 import { API_BASE_URL } from '../config';
+import * as api from "../utils/api.js"
 
 const expandRangesToDates = (ranges) => {
   const allDates = [];
@@ -44,14 +45,8 @@ const HostedListings = () => {
 
   const fetchMyListings = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/listings`);
-      const ids = res.data.listings.map((l) => l.id);
-      const details = await Promise.all(
-        ids.map(async (id) => {
-          const d = await axios.get(`${API_BASE_URL}/listings/${id}`);
-          return { id, ...d.data.listing };
-        })
-      );
+      const ids = await api.fetchListing();
+      const details = await Promise.all(ids.map(id => api.fetchListingDetails(id)));
       const myListings = details.filter((l) => l.owner === currentEmail);
       setListings(myListings);
       setLoading(false);
@@ -68,11 +63,7 @@ const HostedListings = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/listings/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.deleteListing(id);
       setListings((prev) => prev.filter((l) => l.id !== id));
     } catch (_err) {
       setErrorMsg('Failed to delete listing');

@@ -1,6 +1,5 @@
 import {useEffect, useState} from 'react';
 import dayjs from "dayjs";
-import axios from "axios";
 
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -18,36 +17,9 @@ import {Button, Chip, CircularProgress, Divider, Slider, Stack, Typography} from
 
 import NavBar from "../components/NavBar.jsx";
 import ListingCard from "../components/ListingCard.jsx"
-import {API_BASE_URL} from '../config';
+import * as api from "../utils/api.js"
 
 const today = dayjs(new Date());
-
-// Just return the ids
-const fetchListing = async () => {
-  const response = await axios.get(`${API_BASE_URL}/listings`);
-  console.log(response);
-  if (response.status === 200) {
-    const listingsArray = response.data.listings;
-    return listingsArray.map(listing => listing.id);
-  }
-  else{
-    console.log('Error loading listings');
-    return null;
-  }
-}
-
-const fetchListingDetails = async (id) => {
-  console.log(id);
-  const response = await axios.get(`${API_BASE_URL}/listings/${id}`);
-  if (response.status === 200) {
-    console.log(response.data.listings);
-    return response.data.listing;
-  }
-  else{
-    console.log(`Error loading listing!${id}`);
-    return null;
-  }
-}
 
 // Calculate date range in format of YYYY-MM-DD
 const getDateRange = (start, end) => {
@@ -96,8 +68,8 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const ids = await fetchListing();
-      const details = await Promise.all(ids.map(fetchListingDetails));
+      const ids = await api.fetchListing();
+      const details = await Promise.all(ids.map(id => api.fetchListingDetails(id)));
 
       const publishedOnly = details.filter((listing) => listing.published);
       setListings(publishedOnly);

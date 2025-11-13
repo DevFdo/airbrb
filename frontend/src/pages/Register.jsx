@@ -1,5 +1,4 @@
 import {useState} from 'react';
-import axios from "axios";
 import { useNavigate } from 'react-router-dom';
 
 import Button from "@mui/material/Button";
@@ -11,7 +10,7 @@ import Container from "@mui/material/Container";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
-import { API_BASE_URL } from '../config';
+import * as api from "../utils/api.js"
 
 const Register = () => {
   const navigate = useNavigate();
@@ -39,18 +38,7 @@ const Register = () => {
     }
 
     try {
-      const response = await axios.post(API_BASE_URL+'/user/auth/register',
-        {
-          email: email,
-          password: password,
-          name: name,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
+      const response = await api.register(email,name,password);
 
       if (response.status === 200) {
         localStorage.setItem('token', response.data.token);
