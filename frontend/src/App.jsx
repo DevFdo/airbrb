@@ -18,6 +18,8 @@ function App() {
       <Route path="/host/listings" element={<HostedListings />} />
       <Route path="/host/listings/new" element={<CreateListing />} />
       <Route path="/host/listings/:id/edit" element={<EditListing />} />
+      
+      <Route path="/detail/:listingId" element={<ListingDetail />} />
     </Routes>
   );
 }

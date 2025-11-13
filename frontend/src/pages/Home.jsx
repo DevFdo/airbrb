@@ -1,4 +1,5 @@
 import {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import dayjs from "dayjs";
 
 import Paper from '@mui/material/Paper';
@@ -11,15 +12,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SortIcon from '@mui/icons-material/Sort';
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {Button, Chip, CircularProgress, Divider, Slider, Stack, Typography} from '@mui/material';
+import {Button, Chip, CircularProgress, Divider, Slider, Stack, TextField, Typography} from '@mui/material';
 
 import NavBar from "../components/NavBar.jsx";
 import ListingCard from "../components/ListingCard.jsx"
 import * as api from "../utils/api.js"
-
-const today = dayjs(new Date());
 
 // Calculate date range in format of YYYY-MM-DD
 const getDateRange = (start, end) => {
@@ -41,7 +38,7 @@ const getAverageRating = (reviews) => {
 };
 
 const Home = () => {
-
+  const navigate = useNavigate();
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -133,8 +130,8 @@ const Home = () => {
   ************************/
 
   const handleFilteringDate = () =>{
-    setStartDate(null);
-    setEndDate(null);
+    setStartDate('');
+    setEndDate('');
     setIsFilteringDate(false);
   }
 
@@ -145,6 +142,19 @@ const Home = () => {
       return 'none';
     });
   };
+
+  const handleNavigate = (id) =>{
+    if (startDate && endDate) {
+      navigate(`/detail/${id}`, {
+        state: {
+          startDate: startDate,
+          endDate: endDate
+        }
+      });
+    } else {
+      navigate(`/detail/${id}`);
+    }
+  }
 
   return (
     <>
@@ -175,29 +185,41 @@ const Home = () => {
 
         <Grid container spacing={5} sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12} sm={6} md={3}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={2} direction="row">
-                <DatePicker
+            <Stack spacing={2} direction="row" sx={{alignItems:'center'}} >
+              <TextField
                   label="Start Date"
+                  type="date"
+                  size="small"
                   value={startDate}
-                  onChange={(newDate) => setStartDate(newDate)}
-                  minDate={today}
-                  format="YYYY-MM-DD"
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{
+                    min: dayjs().format('YYYY-MM-DD')
+                  }}
+                  onChange={(e) => {
+                    const newStart = e.target.value;
+                    if (dayjs(newStart).isAfter(dayjs(startDate))) {
+                      setEndDate('');
+                    }
+                    setStartDate(newStart);
+                  }}
                 />
-                <DatePicker
-                  label="End Date"
+                <TextField
+                  label="End"
+                  type="date"
+                  size="small"
                   value={endDate}
-                  onChange={(newDate) => setEndDate(newDate)}
-                  minDate={startDate}
-                  format="YYYY-MM-DD"
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{
+                    min: startDate,
+                  }}
+                  onChange={(e) => setEndDate(e.target.value)}
                 />
                 {isFilteringDate && (
                   <IconButton aria-label="delete" size="large" onClick={handleFilteringDate}>
                     <DeleteIcon fontSize="inherit" />
                   </IconButton>
                 )}
-              </Stack>
-            </LocalizationProvider>
+            </Stack>
           </Grid>
           <Grid item xs={12} sm={6} md={2}  >
             <Typography gutterBottom>Bedrooms</Typography>
@@ -265,6 +287,7 @@ const Home = () => {
                     reviewNum={listing.reviews.length}
                     youtubeUrl={listing.metadata?.youtubeUrl}
                     images={listing.metadata?.images}
+                    onClick={() => handleNavigate(listing.id)}
                   />
                 </Grid>
               ))
