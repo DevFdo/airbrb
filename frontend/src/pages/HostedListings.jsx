@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
   Container, Typography, Stack, Button, Grid, Alert, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Box,
@@ -9,7 +8,6 @@ import dayjs from 'dayjs';
 import NavBar from '../components/NavBar.jsx';
 import HostListingCard from '../components/HostListingCard.jsx';
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
-import { API_BASE_URL } from '../config';
 import * as api from "../utils/api.js"
 
 const expandRangesToDates = (ranges) => {
@@ -40,7 +38,6 @@ const HostedListings = () => {
     },
   ]);
 
-  const token = localStorage.getItem('token');
   const currentEmail = localStorage.getItem('email');
 
   const fetchMyListings = async () => {
@@ -89,15 +86,7 @@ const HostedListings = () => {
       return;
     }
     try {
-      await axios.put(
-        `${API_BASE_URL}/listings/publish/${selectedListingId}`,
-        { availability: flatDates },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.publishListing(selectedListingId,flatDates);
       setPublishDialogOpen(false);
       void fetchMyListings();
     } catch (err) {
@@ -108,15 +97,7 @@ const HostedListings = () => {
 
   const handleUnpublish = async (id) => {
     try {
-      await axios.put(
-        `${API_BASE_URL}/listings/unpublish/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.unpublishListing(id);
       void fetchMyListings();
     } catch (_err) {
       setErrorMsg('Failed to unpublish listing');
