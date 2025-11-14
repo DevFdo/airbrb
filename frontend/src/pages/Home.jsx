@@ -191,7 +191,7 @@ const Home = () => {
           <Grid item xs={12}>
             <Paper
               component="form"
-              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center',width: 400}}
+              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center',width: { xs: '100%', sm: 400 }}}
             >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
@@ -298,7 +298,7 @@ const Home = () => {
           </Grid>
         )}
         {!loading && (
-          <Grid container spacing={5} sx={{ mt: 4,mb:4, alignItems: 'center' }}>
+          <Grid container spacing={5} sx={{ mt: 4, mb:4, alignItems: 'center',justifyContent: { xs: 'center', sm: 'flex-start' }}}>
             {filteredListings.length > 0 &&(
               filteredListings.map((listing) => (
                 <Grid item xs={12} sm={6} md={4} key={listing.id}>

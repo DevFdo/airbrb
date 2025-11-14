@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react'
 import {useLocation,useNavigate, useParams} from 'react-router-dom';
+import {useMediaQuery} from 'react-responsive';
 import dayjs from 'dayjs'
 
 import {Alert, Box, Button, Chip, CircularProgress, Container, 
@@ -56,6 +57,7 @@ const ListingDetail = () => {
     return allDates;
   };
 
+  const isMobile = useMediaQuery({ maxWidth: 600 });
   const location = useLocation();
   const rawStart = location.state?.startDate;
   const rawEnd = location.state?.endDate;
@@ -179,7 +181,7 @@ const ListingDetail = () => {
       )}
       {detail && (
         <Container>
-          <Box display="flex" flexDirection="row" gap={3} p={5}>
+          <Box display="flex" flexDirection={isMobile ? "column" : "row"}  gap={3} p={5}>
             <Box flex={1} sx={{
               display:'flex',
               alignItems: 'center',
