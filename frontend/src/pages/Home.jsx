@@ -44,6 +44,7 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [filteredListings, setFilteredListings] = useState([]);
   const [isFilteringDate, setIsFilteringDate] = useState(false);
+  const [isFiltered, setIsFiltered] = useState(false);
 
   const [maximumPrice, setMaximumPrice] = useState(1000);
   const [minimumPrice, setMinimumPrice] = useState(100);
@@ -68,20 +69,44 @@ const Home = () => {
       const ids = await api.fetchListing();
       const details = await Promise.all(ids.map(id => api.fetchListingDetails(id)));
 
-      const publishedOnly = details.filter((listing) => listing.published);
-      setListings(publishedOnly);
-      setFilteredListings(publishedOnly);
 
-      const maxBed = Math.max(...details.map(listing => listing.metadata.bedroom));
+      const published = details.filter(detail => detail.published)
+
+      const sortedPublished = [...published].sort((a, b) =>
+        a.title.localeCompare(b.title)
+      );
+
+      const email = localStorage.getItem('email');
+      let prioritizedListings = sortedPublished;
+
+      if (email) {
+        const allBookings = await api.fetchBookings();
+
+        const bookedListingIds = new Set(
+          allBookings
+            .filter(b => b.owner === email)
+            .map(b => b.listingId)
+        );
+        const booked = sortedPublished.filter(l => bookedListingIds.has(l.id.toString()));
+        const unbooked = sortedPublished.filter(l => !bookedListingIds.has(l.id.toString()));
+
+        prioritizedListings = [...booked, ...unbooked];
+      }
+
+      setListings(prioritizedListings);
+      setFilteredListings(prev => (isFiltered ? prev : prioritizedListings));
+
+      const maxBed = Math.max(...prioritizedListings.map(listing => listing.metadata.bedroom));
       setMaximumBed(maxBed);
 
-      const minBed = Math.min(...details.map(listing => listing.metadata.bedroom));
+      const minBed = Math.min(...prioritizedListings.map(listing => listing.metadata.bedroom));
       setMinimumBed(minBed);
 
-      const maxPrice = Math.max(...details.map(listing => listing.price));
+      const maxPrice = Math.max(...prioritizedListings.map(listing => listing.price));
       setMaximumPrice(maxPrice);
 
-      const minPrice = Math.min(...details.map(listing => listing.price));
+      const minPrice = Math.min(...prioritizedListings.map(listing => listing.price));
+      setMinimumPrice(minPrice);
       setMinimumPrice(minPrice);
 
       setBedroomRange([minBed, maxBed]);

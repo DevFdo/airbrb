@@ -124,12 +124,6 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
           {reviewNum > 1 && `${reviewNum} Reviews`}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <Typography variant="body2" sx={{ color: 'text.secondary'}}>
-          <PendingActionsIcon color="action" sx={{ color: 'action' }} /> Pending
-        </Typography>
-        
-      </CardActions>
     </Card>
   );
 }
