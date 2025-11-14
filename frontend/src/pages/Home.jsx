@@ -44,7 +44,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [filteredListings, setFilteredListings] = useState([]);
   const [isFilteringDate, setIsFilteringDate] = useState(false);
-  const [isFiltered, setIsFiltered] = useState(false);
 
   const [maximumPrice, setMaximumPrice] = useState(1000);
   const [minimumPrice, setMinimumPrice] = useState(100);
@@ -94,7 +93,7 @@ const Home = () => {
       }
 
       setListings(prioritizedListings);
-      setFilteredListings(prev => (isFiltered ? prev : prioritizedListings));
+      setFilteredListings(prioritizedListings);
 
       const maxBed = Math.max(...prioritizedListings.map(listing => listing.metadata.bedroom));
       setMaximumBed(maxBed);

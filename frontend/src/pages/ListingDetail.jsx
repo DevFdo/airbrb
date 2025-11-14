@@ -41,7 +41,7 @@ const ListingDetail = () => {
   const [booking, setBooking] = useState([]);
   const [canReview, setCanReview] = useState(false);
   const [reviewingId, setReviewingId] = useState(null);
-  
+
   const expandRangesToDates = (ranges) => {
     const allDates = [];
     ranges.forEach((r) => {
@@ -153,6 +153,18 @@ const ListingDetail = () => {
     setShowConfirmation(true);
     setTimeout(() => setShowConfirmation(false), 3000);
   };
+
+  const handleReview= async (payload) => {
+    try {
+      const body = {
+        ...payload,
+      };
+      await api.makeReview(listingId,reviewingId,body);
+      await loadDetail();
+    } catch (err) {
+      console.error(err);
+    }
+  }
   
   return(
     <>
@@ -282,15 +294,13 @@ const ListingDetail = () => {
             </Box>
           </Box>
           <Box mt={3}>
-            {auth && (
-              email !== detail.owner &&(
-                <Box >
-                  <Typography variant="body1" fontWeight="bold">
-                    Enjoy your stay? Please leave us a review!
-                  </Typography>
-                  <ReviewForm />
-                </Box>
-              )
+            {canReview && (
+              <Box >
+                <Typography variant="body1" fontWeight="bold">
+                  Enjoy your stay? Please leave us a review!
+                </Typography>
+                <ReviewForm onSubmit={handleReview} />
+              </Box>
             )}
             <Typography variant="body1" fontWeight="bold">
               Reviews:

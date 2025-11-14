@@ -137,3 +137,11 @@ export const fetchBookings = async () => {
     return null;
   }
 }
+
+export const makeReview = async (listingId,bookingId,body) => {
+  const token = localStorage.getItem('token');
+  await axios.put(`${API_BASE_URL}/listings/${listingId}/review/${bookingId}`
+    ,{review:body},{headers: {'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`},
+    });
+}
