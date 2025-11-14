@@ -18,6 +18,7 @@ import ReviewItems from "../components/ReviewItem.jsx"
 import ReviewForm from "../components/ReviewForm.jsx"
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
 import BookingPicker from "../components/BookingPicker.jsx";
+import BookingItem from "../components/BookingItem.jsx";
 
 
 const ListingDetail = () => {
@@ -37,7 +38,10 @@ const ListingDetail = () => {
 
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
-
+  const [booking, setBooking] = useState([]);
+  const [canReview, setCanReview] = useState(false);
+  const [reviewingId, setReviewingId] = useState(null);
+  
   const expandRangesToDates = (ranges) => {
     const allDates = [];
     ranges.forEach((r) => {
@@ -70,6 +74,21 @@ const ListingDetail = () => {
     setDetail(data);
   };
 
+  const getMyBookings = async () => {
+    const allBookings = await api.fetchBookings();
+    const myBookings = allBookings.filter(allBooking => {
+      return allBooking.owner===email && allBooking.listingId===listingId;
+    })
+    setBooking(myBookings);
+    const acceptedBooking = myBookings.filter(myBooking => {
+      return myBooking.status === 'accepted';
+    })
+    if(acceptedBooking.length > 0){
+      setCanReview(true);
+      setReviewingId(acceptedBooking[0].id);
+    }
+  }
+
   useEffect(() => {
     void loadDetail();
   }, [listingId]);
@@ -77,7 +96,9 @@ const ListingDetail = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     setAuth(!!token);
-  }, []);
+    if (!token) return;
+    void getMyBookings();
+  },[email, listingId])
 
   const openPublishDialog = () => {
     setAvailabilityRanges([
@@ -201,6 +222,20 @@ const ListingDetail = () => {
                   </Box>
                 </Box>
               )}
+              {booking.length>0 &&(
+                <List>
+                  {booking.map((item,index) => (
+                    <Box key={index}>
+                      <BookingItem
+                        status={item.status}
+                        startDate={item.dateRange[0]}
+                        endDate={item.dateRange[item.dateRange.length - 1]}
+                      />
+                      {index < booking.length - 1 && <Divider />}
+                    </Box>
+                  ))}
+                </List>
+              )}
               {auth && (
                 email === detail.owner ? (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
@@ -233,7 +268,7 @@ const ListingDetail = () => {
                   </Box>
                 ) : (
                   <Button variant="contained" sx={{ mt: 3 }}
-                  onClick={()=>{setBookingDialogOpen(true)}}>Book Now</Button>
+                    onClick={()=>{setBookingDialogOpen(true)}}>Book Now</Button>
                 )
               )}
               {!auth && (

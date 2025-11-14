@@ -123,3 +123,17 @@ export const makeBooking = async (id,dateRange,totalPrice) => {
     'Authorization': `Bearer ${token}`},}
   );
 }
+
+export const fetchBookings = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(`${API_BASE_URL}/bookings`,
+    {headers: {'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`},});
+  if(response.status === 200) {
+    return response.data.bookings;
+  }
+  else{
+    console.log('Error loading bookings');
+    return null;
+  }
+}
