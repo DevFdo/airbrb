@@ -14,7 +14,7 @@ import { useState } from 'react';
 
 const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
-const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) => {
+const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish,onClick }) => {
   const reviews = listing.reviews || [];
   const avg = reviews.length > 0 ? reviews.reduce((s, r) => s + r.score, 0) / reviews.length : 0;
 
@@ -44,7 +44,8 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish }) 
   };
 
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      onClick={onClick}>
       <CardHeader title={listing.title} subheader={propertyType} />
 
       <CardMedia>

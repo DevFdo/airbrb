@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {useEffect, useState} from "react";
 import {Link, useNavigate} from 'react-router-dom';
-import axios from "axios";
 
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -10,7 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import {Button, Menu, MenuItem, Snackbar, Alert} from "@mui/material";
 
-import {API_BASE_URL} from "../config.js";
+import * as api from "../utils/api.js"
 
 export default function NavBar() {
 
@@ -43,17 +42,9 @@ export default function NavBar() {
 
   const handleLogout = async (e) => {
     e.preventDefault();
-    console.log(localStorage.getItem('token'));
-    
+
     try {
-      const response = await axios.post(API_BASE_URL + '/user/auth/logout', {},
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        }
-      );
+      const response = await api.logout();
       
       if (response.status === 200) {
         setSnackMsg('Successfully logged out');

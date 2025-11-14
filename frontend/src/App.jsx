@@ -7,6 +7,8 @@ import HostedListings from './pages/HostedListings.jsx';
 import CreateListing from './pages/CreateListing.jsx';
 import EditListing from './pages/EditListing.jsx';
 
+import ListingDetail  from "./pages/ListingDetail.jsx";
+
 function App() {
   return (
     <Routes>
@@ -18,6 +20,8 @@ function App() {
       <Route path="/host/listings" element={<HostedListings />} />
       <Route path="/host/listings/new" element={<CreateListing />} />
       <Route path="/host/listings/:id/edit" element={<EditListing />} />
+      
+      <Route path="/detail/:listingId" element={<ListingDetail />} />
     </Routes>
   );
 }

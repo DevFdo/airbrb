@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import {
   Container, Typography, Alert, CircularProgress, Box, Stack, Button,
 } from '@mui/material';
 
 import NavBar from '../components/NavBar.jsx';
 import ListingForm from '../components/ListingForm.jsx';
-import { API_BASE_URL } from '../config';
+import * as api from "../utils/api.js"
 
 const EditListing = () => {
   const { id } = useParams();
@@ -15,13 +14,12 @@ const EditListing = () => {
   const [listing, setListing] = useState(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await axios.get(`${API_BASE_URL}/listings/${id}`);
-        setListing(res.data.listing);
+        const detail = await api.fetchListingDetails(id);
+        setListing(detail);
         setLoading(false);
       } catch (err) {
         console.error(err);
@@ -34,17 +32,8 @@ const EditListing = () => {
 
   const handleUpdate = async (payload) => {
     try {
-      await axios.put(
-        `${API_BASE_URL}/listings/${id}`,
-        payload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      navigate('/host/listings');
+      await api.updateListing(id,payload);
+      navigate(-1);
     } catch (err) {
       console.error(err);
       setErrorMsg('Failed to update listing');

@@ -19,7 +19,7 @@ import { toYoutubeEmbed } from '../utils/helpers';
 const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
 
-const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images = [],}) => {
+const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images = [],onClick}) => {
 
   const embedUrl = toYoutubeEmbed(youtubeUrl);
 
@@ -38,7 +38,8 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
   };
 
   return (
-    <Card sx={{ width: 300, height: '100%' }}>
+    <Card sx={{ width: 250,cursor: 'pointer'}}
+      onClick={onClick}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">

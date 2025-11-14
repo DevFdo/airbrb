@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {
   Container, Typography, Stack, Button, Grid, Alert, Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress, Box,
@@ -9,7 +8,7 @@ import dayjs from 'dayjs';
 import NavBar from '../components/NavBar.jsx';
 import HostListingCard from '../components/HostListingCard.jsx';
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
-import { API_BASE_URL } from '../config';
+import * as api from "../utils/api.js"
 
 const expandRangesToDates = (ranges) => {
   const allDates = [];
@@ -39,19 +38,12 @@ const HostedListings = () => {
     },
   ]);
 
-  const token = localStorage.getItem('token');
   const currentEmail = localStorage.getItem('email');
 
   const fetchMyListings = async () => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/listings`);
-      const ids = res.data.listings.map((l) => l.id);
-      const details = await Promise.all(
-        ids.map(async (id) => {
-          const d = await axios.get(`${API_BASE_URL}/listings/${id}`);
-          return { id, ...d.data.listing };
-        })
-      );
+      const ids = await api.fetchListing();
+      const details = await Promise.all(ids.map(id => api.fetchListingDetails(id)));
       const myListings = details.filter((l) => l.owner === currentEmail);
       setListings(myListings);
       setLoading(false);
@@ -68,11 +60,7 @@ const HostedListings = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API_BASE_URL}/listings/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.deleteListing(id);
       setListings((prev) => prev.filter((l) => l.id !== id));
     } catch (_err) {
       setErrorMsg('Failed to delete listing');
@@ -98,15 +86,7 @@ const HostedListings = () => {
       return;
     }
     try {
-      await axios.put(
-        `${API_BASE_URL}/listings/publish/${selectedListingId}`,
-        { availability: flatDates },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.publishListing(selectedListingId,flatDates);
       setPublishDialogOpen(false);
       void fetchMyListings();
     } catch (err) {
@@ -117,20 +97,16 @@ const HostedListings = () => {
 
   const handleUnpublish = async (id) => {
     try {
-      await axios.put(
-        `${API_BASE_URL}/listings/unpublish/${id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.unpublishListing(id);
       void fetchMyListings();
     } catch (_err) {
       setErrorMsg('Failed to unpublish listing');
     }
   };
+
+  const handleNavigate = (id) =>{
+    navigate(`/detail/${id}`);
+  }
 
   return (
     <>
@@ -168,6 +144,7 @@ const HostedListings = () => {
                   onDelete={() => handleDelete(listing.id)}
                   onPublish={() => openPublishDialog(listing)}
                   onUnpublish={() => handleUnpublish(listing.id)}
+                  onClick={() => handleNavigate(listing.id)}
                 />
               </Grid>
             ))}

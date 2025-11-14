@@ -1,16 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Container, Typography, Alert, Button, Stack } from '@mui/material';
 
 import NavBar from '../components/NavBar.jsx';
 import ListingForm from '../components/ListingForm.jsx';
-import { API_BASE_URL } from '../config';
+import * as api from '../utils/api.js'
 
 const CreateListing = () => {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState('');
-  const token = localStorage.getItem('token');
   const ownerEmail = localStorage.getItem('email');
 
   const handleCreate = async (payload) => {
@@ -19,14 +17,7 @@ const CreateListing = () => {
         ...payload,
         owner: ownerEmail,
       };
-
-      await axios.post(`${API_BASE_URL}/listings/new`, body, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await api.createListing(body);
       navigate('/host/listings');
     } catch (err) {
       console.error(err);

@@ -1,6 +1,6 @@
 import {useEffect, useState} from 'react';
+import {useNavigate} from "react-router-dom";
 import dayjs from "dayjs";
-import axios from "axios";
 
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
@@ -12,42 +12,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SortIcon from '@mui/icons-material/Sort';
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
-import {DatePicker, LocalizationProvider} from "@mui/x-date-pickers";
-import {AdapterDayjs} from "@mui/x-date-pickers/AdapterDayjs";
-import {Button, Chip, CircularProgress, Divider, Slider, Stack, Typography} from '@mui/material';
+import {Button, Chip, CircularProgress, Divider, Slider, Stack, TextField, Typography} from '@mui/material';
 
 import NavBar from "../components/NavBar.jsx";
 import ListingCard from "../components/ListingCard.jsx"
-import {API_BASE_URL} from '../config';
-
-const today = dayjs(new Date());
-
-// Just return the ids
-const fetchListing = async () => {
-  const response = await axios.get(`${API_BASE_URL}/listings`);
-  console.log(response);
-  if (response.status === 200) {
-    const listingsArray = response.data.listings;
-    return listingsArray.map(listing => listing.id);
-  }
-  else{
-    console.log('Error loading listings');
-    return null;
-  }
-}
-
-const fetchListingDetails = async (id) => {
-  console.log(id);
-  const response = await axios.get(`${API_BASE_URL}/listings/${id}`);
-  if (response.status === 200) {
-    console.log(response.data.listings);
-    return response.data.listing;
-  }
-  else{
-    console.log(`Error loading listing!${id}`);
-    return null;
-  }
-}
+import * as api from "../utils/api.js"
 
 // Calculate date range in format of YYYY-MM-DD
 const getDateRange = (start, end) => {
@@ -69,7 +38,7 @@ const getAverageRating = (reviews) => {
 };
 
 const Home = () => {
-
+  const navigate = useNavigate();
 
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -96,8 +65,8 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const ids = await fetchListing();
-      const details = await Promise.all(ids.map(fetchListingDetails));
+      const ids = await api.fetchListing();
+      const details = await Promise.all(ids.map(id => api.fetchListingDetails(id)));
 
       const publishedOnly = details.filter((listing) => listing.published);
       setListings(publishedOnly);
@@ -161,8 +130,8 @@ const Home = () => {
   ************************/
 
   const handleFilteringDate = () =>{
-    setStartDate(null);
-    setEndDate(null);
+    setStartDate('');
+    setEndDate('');
     setIsFilteringDate(false);
   }
 
@@ -173,6 +142,19 @@ const Home = () => {
       return 'none';
     });
   };
+
+  const handleNavigate = (id) =>{
+    if (startDate && endDate) {
+      navigate(`/detail/${id}`, {
+        state: {
+          startDate: startDate,
+          endDate: endDate
+        }
+      });
+    } else {
+      navigate(`/detail/${id}`);
+    }
+  }
 
   return (
     <>
@@ -203,29 +185,39 @@ const Home = () => {
 
         <Grid container spacing={5} sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12} sm={6} md={3}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={2} direction="row">
-                <DatePicker
-                  label="Start Date"
-                  value={startDate}
-                  onChange={(newDate) => setStartDate(newDate)}
-                  minDate={today}
-                  format="YYYY-MM-DD"
-                />
-                <DatePicker
-                  label="End Date"
-                  value={endDate}
-                  onChange={(newDate) => setEndDate(newDate)}
-                  minDate={startDate}
-                  format="YYYY-MM-DD"
-                />
-                {isFilteringDate && (
-                  <IconButton aria-label="delete" size="large" onClick={handleFilteringDate}>
-                    <DeleteIcon fontSize="inherit" />
-                  </IconButton>
-                )}
-              </Stack>
-            </LocalizationProvider>
+            <Stack spacing={2} direction="row" sx={{alignItems:'center'}} >
+              <TextField
+                label="Start Date"
+                type="date"
+                size="small"
+                value={startDate}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{
+                  min: dayjs().format('YYYY-MM-DD')
+                }}
+                onChange={(e) => {
+                  const newStart = e.target.value;
+                  if (dayjs(newStart).isAfter(dayjs(startDate))) {
+                    setEndDate('');
+                  }
+                  setStartDate(newStart);
+                }}
+              />
+              <TextField
+                label="End"
+                type="date"
+                size="small"
+                value={endDate}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{min: startDate,}}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+              {isFilteringDate && (
+                <IconButton aria-label="delete" size="large" onClick={handleFilteringDate}>
+                  <DeleteIcon fontSize="inherit" />
+                </IconButton>
+              )}
+            </Stack>
           </Grid>
           <Grid item xs={12} sm={6} md={2}  >
             <Typography gutterBottom>Bedrooms</Typography>
@@ -282,7 +274,7 @@ const Home = () => {
           </Grid>
         )}
         {!loading && (
-          <Grid container spacing={5} sx={{ mt: 4, justifyContent: 'center', alignItems: 'center' }}>
+          <Grid container spacing={5} sx={{ mt: 4,mb:4, alignItems: 'center' }}>
             {filteredListings.length > 0 &&(
               filteredListings.map((listing) => (
                 <Grid item xs={12} sm={6} md={4} key={listing.id}>
@@ -293,6 +285,7 @@ const Home = () => {
                     reviewNum={listing.reviews.length}
                     youtubeUrl={listing.metadata?.youtubeUrl}
                     images={listing.metadata?.images}
+                    onClick={() => handleNavigate(listing.id)}
                   />
                 </Grid>
               ))
