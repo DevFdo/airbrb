@@ -13,6 +13,7 @@ import ImageCarousel from "../components/ImageCarousel.jsx"
 import ReviewItems from "../components/ReviewItem.jsx"
 import ReviewForm from "../components/ReviewForm.jsx"
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
+import BookingPicker from "../components/BookingPicker.jsx";
 
 
 const ListingDetail = () => {
@@ -29,6 +30,9 @@ const ListingDetail = () => {
       end: dayjs().add(1, 'day').format('YYYY-MM-DD'),
     },
   ]);
+
+  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [booking, setBooking] = useState([]);
 
   const expandRangesToDates = (ranges) => {
     const allDates = [];
@@ -79,6 +83,16 @@ const ListingDetail = () => {
       },
     ]);
     setPublishDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setBookingDialogOpen(false);
+  }
+
+  const handleBookingConfirmed = async () => {
+    setShowConfirmation(true);
+    await getMyBookings();
+    setTimeout(() => setShowConfirmation(false), 3000);
   };
 
   const handleDelete = async () =>{
@@ -268,6 +282,18 @@ const ListingDetail = () => {
               </Button>
             </DialogActions>
           </Dialog>
+          <Dialog open={bookingDialogOpen} onClose={() => setBookingDialogOpen(false)} maxWidth="sm" fullWidth>
+          <DialogTitle >Make a Booking!</DialogTitle>
+          <DialogContent>
+            <BookingPicker
+              availability={detail.availability}
+              pricePerNight={detail.price}
+              listingId={listingId}
+              onClose={handleCloseDialog}
+              onConfirm={handleBookingConfirmed}
+            />
+          </DialogContent>
+        </Dialog>
         </Container>
       )}
     </>
