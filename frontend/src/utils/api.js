@@ -112,3 +112,14 @@ export const unpublishListing = async (id) =>{
     }
   )
 }
+
+export const makeBooking = async (id,dateRange,totalPrice) => {
+  const token = localStorage.getItem('token');
+  await axios.post(`${API_BASE_URL}/bookings/new/${id}`,{
+    dateRange: dateRange,
+    totalPrice: totalPrice,
+  },
+  {headers: {'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`},}
+  );
+}

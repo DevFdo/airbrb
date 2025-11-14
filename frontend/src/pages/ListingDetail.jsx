@@ -2,7 +2,11 @@ import {useEffect, useState} from 'react'
 import {useLocation,useNavigate, useParams} from 'react-router-dom';
 import dayjs from 'dayjs'
 
-import {Alert, Box, Button, Chip, CircularProgress, Container, Dialog, DialogTitle, DialogContent, DialogActions, Divider, Link, List, Typography} from "@mui/material";
+import {Alert, Box, Button, Chip, CircularProgress, Container, 
+  Dialog, DialogTitle, DialogContent, DialogActions, Divider, 
+  Link, List,Snackbar, Typography} 
+  from "@mui/material";
+
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
 import HotelIcon from '@mui/icons-material/Hotel';
@@ -32,7 +36,7 @@ const ListingDetail = () => {
   ]);
 
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
-  const [booking, setBooking] = useState([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const expandRangesToDates = (ranges) => {
     const allDates = [];
@@ -85,16 +89,6 @@ const ListingDetail = () => {
     setPublishDialogOpen(true);
   };
 
-  const handleCloseDialog = () => {
-    setBookingDialogOpen(false);
-  }
-
-  const handleBookingConfirmed = async () => {
-    setShowConfirmation(true);
-    await getMyBookings();
-    setTimeout(() => setShowConfirmation(false), 3000);
-  };
-
   const handleDelete = async () =>{
     try {
       await api.deleteListing(listingId);
@@ -127,6 +121,16 @@ const ListingDetail = () => {
     } catch (_err) {
       setErrorMsg('Failed to unpublish listing');
     }
+  };
+
+
+  const handleCloseDialog = () => {
+    setBookingDialogOpen(false);
+  }
+
+  const handleBookingConfirmed = async () => {
+    setShowConfirmation(true);
+    setTimeout(() => setShowConfirmation(false), 3000);
   };
   
   return(
@@ -228,8 +232,8 @@ const ListingDetail = () => {
                     )}
                   </Box>
                 ) : (
-                  <Button variant="contained" sx={{ mt: 3 }}>Book Now</Button>
-                  //TODO:A list of My booking status
+                  <Button variant="contained" sx={{ mt: 3 }}
+                  onClick={()=>{setBookingDialogOpen(true)}}>Book Now</Button>
                 )
               )}
               {!auth && (
@@ -283,17 +287,22 @@ const ListingDetail = () => {
             </DialogActions>
           </Dialog>
           <Dialog open={bookingDialogOpen} onClose={() => setBookingDialogOpen(false)} maxWidth="sm" fullWidth>
-          <DialogTitle >Make a Booking!</DialogTitle>
-          <DialogContent>
-            <BookingPicker
-              availability={detail.availability}
-              pricePerNight={detail.price}
-              listingId={listingId}
-              onClose={handleCloseDialog}
-              onConfirm={handleBookingConfirmed}
-            />
-          </DialogContent>
-        </Dialog>
+            <DialogTitle >Make a Booking!</DialogTitle>
+            <DialogContent>
+              <BookingPicker
+                availability={detail.availability}
+                pricePerNight={detail.price}
+                listingId={listingId}
+                onClose={handleCloseDialog}
+                onConfirm={handleBookingConfirmed}
+              />
+            </DialogContent>
+          </Dialog>
+          <Snackbar
+            open={showConfirmation}
+            message="Booking confirmed!"
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          />
         </Container>
       )}
     </>
