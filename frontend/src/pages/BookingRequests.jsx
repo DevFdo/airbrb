@@ -46,7 +46,100 @@ const BookingRequests = () => {
     }
   };
 
-  
+  // Calculate how long the listing has been online
+  const getDaysOnline = () => {
+    if (!listing || !listing.postedOn) return 0;
+    const postedDate = dayjs(listing.postedOn);
+    const today = dayjs();
+    return today.diff(postedDate, 'day');
+  };
+
+  // Calculate days booked this year (accepted bookings only)
+  const getDaysBookedThisYear = () => {
+    const currentYear = dayjs().year();
+    let totalDays = 0;
+
+    bookings
+      .filter((booking) => booking.status === 'accepted')
+      .forEach((booking) => {
+        booking.dateRange.forEach((date) => {
+          if (dayjs(date).year() === currentYear) {
+            totalDays++;
+          }
+        });
+      });
+
+    return totalDays;
+  };
+
+  // Calculate profit this year (accepted bookings only)
+  const getProfitThisYear = () => {
+    const currentYear = dayjs().year();
+    let totalProfit = 0;
+
+    bookings
+      .filter((booking) => booking.status === 'accepted')
+      .forEach((booking) => {
+        // Check if any date in the booking is in current year
+        const hasCurrentYearDate = booking.dateRange.some(
+          (date) => dayjs(date).year() === currentYear
+        );
+
+        if (hasCurrentYearDate) {
+          totalProfit += booking.totalPrice || 0;
+        }
+      });
+
+    return totalProfit;
+  };
+
+  const handleAccept = async (bookingId) => {
+    try {
+      await api.acceptBooking(bookingId);
+      setSuccessMsg('Booking accepted successfully!');
+      setTimeout(() => setSuccessMsg(''), 3000);
+      await fetchData(); // Refresh data
+    } catch (_err) {
+      setErrorMsg('Failed to accept booking');
+      setTimeout(() => setErrorMsg(''), 3000);
+    }
+  };
+
+  const handleDeny = async (bookingId) => {
+    try {
+      await api.denyBooking(bookingId);
+      setSuccessMsg('Booking declined successfully!');
+      setTimeout(() => setSuccessMsg(''), 3000);
+      await fetchData(); // Refresh data
+    } catch (_err) {
+      setErrorMsg('Failed to decline booking');
+      setTimeout(() => setErrorMsg(''), 3000);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+    case 'accepted':
+      return 'success';
+    case 'declined':
+      return 'error';
+    case 'pending':
+      return 'warning';
+    default:
+      return 'default';
+    }
+  };
+
+  if (loading) {
+    return (
+      <>
+        <NavBar />
+        <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <CircularProgress />
+        </Container>
+      </>
+    );
+  }
 
   return (
     <>
