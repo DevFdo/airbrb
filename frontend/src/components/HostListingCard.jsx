@@ -10,11 +10,12 @@ import StarHalfIcon from '@mui/icons-material/StarHalf';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import { useState } from 'react';
 
 const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
-const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish,onClick }) => {
+const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish, onClick, onViewBookings }) => {
   const reviews = listing.reviews || [];
   const avg = reviews.length > 0 ? reviews.reduce((s, r) => s + r.score, 0) / reviews.length : 0;
 
@@ -47,23 +48,28 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish,onC
 
   // handler wrappers
   const handleEditClick = (e) => {
-    e.stopPropagation(); // ← STOP event from reaching Card
+    e.stopPropagation(); 
     onEdit();
   };
 
   const handleDeleteClick = (e) => {
-    e.stopPropagation(); // ← STOP event from reaching Card
+    e.stopPropagation();
     onDelete();
   };
 
   const handlePublishClick = (e) => {
-    e.stopPropagation(); // ← STOP event from reaching Card
+    e.stopPropagation(); 
     onPublish();
   };
 
   const handleUnpublishClick = (e) => {
-    e.stopPropagation(); // ← STOP event from reaching Card
+    e.stopPropagation(); 
     onUnpublish();
+  };
+
+  const handleViewBookingsClick = (e) => {
+    e.stopPropagation();
+    onViewBookings();
   };
 
   return (
@@ -166,26 +172,50 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish,onC
           ${price} / night
         </Typography>
       </CardContent>
-      <CardActions>
-        <Tooltip title="Edit listing">
-          <IconButton onClick={handleEditClick}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Delete listing">
-          <IconButton onClick={handleDeleteClick}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-        {isPublished ? (
-          <Button startIcon={<PublicOffIcon />} size="small" onClick={handleUnpublishClick}>
-            Unpublish
-          </Button>
-        ) : (
-          <Button startIcon={<PublicIcon />} size="small" onClick={handlePublishClick}>
-            Publish
-          </Button>
-        )}
+
+
+      <CardActions sx={{ flexDirection: 'column', gap: 1, alignItems: 'stretch', p: 2 }}>
+        <Stack direction="row" spacing={1} justifyContent="space-between" alignItems="center">
+          <Tooltip title="Edit listing">
+            <IconButton onClick={handleEditClick} size="small">
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Delete listing">
+            <IconButton onClick={handleDeleteClick} size="small">
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+          {isPublished ? (
+            <Button 
+              startIcon={<PublicOffIcon />} 
+              size="small" 
+              onClick={handleUnpublishClick}
+              sx={{ fontSize: '0.75rem' }}
+            >
+              Unpublish
+            </Button>
+          ) : (
+            <Button 
+              startIcon={<PublicIcon />} 
+              size="small" 
+              onClick={handlePublishClick}
+              sx={{ fontSize: '0.75rem' }}
+            >
+              Publish
+            </Button>
+          )}
+        </Stack>
+
+        <Button
+          variant="outlined"
+          size="small"
+          fullWidth
+          startIcon={<BookmarksIcon />}
+          onClick={handleViewBookingsClick}
+        >
+          View Bookings
+        </Button>
       </CardActions>
     </Card>
   );
