@@ -5,12 +5,16 @@ import dayjs from 'dayjs'
 
 import {Alert, Box, Button, Chip, CircularProgress, Container, 
   Dialog, DialogTitle, DialogContent, DialogActions, Divider, 
-  Link, List,Snackbar, Typography} 
+  Link, List,Snackbar, Typography, Stack} 
   from "@mui/material";
 
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
 import HotelIcon from '@mui/icons-material/Hotel';
+
+import StarIcon from '@mui/icons-material/Star';
+import StarHalfIcon from '@mui/icons-material/StarHalf';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
 
 import * as api from '../utils/api.js'
 import NavBar from "../components/NavBar.jsx";
@@ -55,6 +59,12 @@ const ListingDetail = () => {
       }
     });
     return allDates;
+  };
+
+  const calculateAverageRating = (reviews) => {
+    if (!reviews || reviews.length === 0) return 0;
+    const total = reviews.reduce((sum, review) => sum + review.score, 0);
+    return total / reviews.length;
   };
 
   const isMobile = useMediaQuery({ maxWidth: 600 });
@@ -236,6 +246,32 @@ const ListingDetail = () => {
                   </Box>
                 </Box>
               )}
+
+              <Stack direction="row" mt={2} spacing={1} alignItems="center" sx={{ mb: 2 }}>
+                {Array.from({ length: 5 }).map((_, index) => {
+                  const avg = calculateAverageRating(detail.reviews);
+                  const diff = avg - index;
+
+                  // Full star
+                  if (diff >= 1) {
+                    return <StarIcon key={index} fontSize="medium" sx={{ color: '#FFD700' }} />;
+                  }
+                  // Half star
+                  if (diff > 0) {
+                    return <StarHalfIcon key={index} fontSize="medium" sx={{ color: '#FFD700' }} />;
+                  }
+                  // Empty star
+                  return <StarBorderIcon key={index} fontSize="medium" sx={{ color: '#ccc' }} />;
+                })}
+                
+                <Typography variant="body1" fontWeight="bold">
+                  {calculateAverageRating(detail.reviews).toFixed(1)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  ({detail.reviews?.length || 0} {detail.reviews?.length === 1 ? 'review' : 'reviews'})
+                </Typography>
+              </Stack>
+
               {booking.length>0 &&(
                 <List>
                   {booking.map((item,index) => (
