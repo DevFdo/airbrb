@@ -16,6 +16,8 @@ This assignment is due _Friday 21st November, 10pm_.
 
 28/10/25 - Due date typo was updated (wrong day, correct date)
 
+18/11/25 - Added clarifications for ascending/descending sort order
+
 ## Compulsory setup
 
 Please run ./util/setup.sh in your terminal before you begin. This will set up some checks in relation to the "Git Commit Requirements". If you ran this script before the MR rolled out specified in changelog, please run it again.
@@ -165,11 +167,14 @@ When the app loads, regardless of whether a user is logged in or not, they can a
   - You are only required to do case insensitive substring matching (of each word in the search field), nothing more complicated.
 - Other form inputs (filters) should also exist that allow the user to search by:
   - Number of bedrooms (a minimum and maximum number of bedrooms, expressed either via text fields or a slider)
+    - Sort results from max to min beds **or** from min to max beds
   - Date range (two date fields) - only display bookings that are available for the entire date range as inputted by the user.
+    - Sort not required
   - Price (a minimum and maximum price, expressed either via text fields or a slider)
+    - Sort results from highest to lowest price **or** from lowest to highest price
   - Review ratings:
     - Sort results from highest to lowest review rating **or** from lowest to highest review rating
-    - If there is more than one listing with the same rating, their order does not matter
+- For any sort applied, if there is more than one listing with the same value, the order does not matter
 - The search section must have an associated search button that will action the search to reload the results given the new filters.
 
 #### 2.3.3 Multiple search filters 🙉🙉🙉
@@ -178,6 +183,7 @@ When the app loads, regardless of whether a user is logged in or not, they can a
 
 - When multiple filters are applied, only listings that satisfy all selected filters should be displayed.
   - The system should maintain applied filters until the user resets or clears them.
+- If multiple filters are applied, only sorting the result by alphabetical order is required
 - If no listings match the combined filters, the results area should clearly show that no listings are available.
 
 ### 2.4. Feature Set 4. Viewing and Booking Listings (9%)
