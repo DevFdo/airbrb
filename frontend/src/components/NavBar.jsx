@@ -57,9 +57,7 @@ export default function NavBar() {
         localStorage.removeItem('token');
         localStorage.removeItem('email');
         setAuth(false);
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
+        navigate('/');
       }
     } catch (err) {
       setSnackMsg('Could not log out: ' + (err.response?.data?.error || err.message));
@@ -120,7 +118,7 @@ export default function NavBar() {
                     My Hosted Listings
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
-                  Log out
+                    Log out
                   </MenuItem>
                 </Menu>
               </div>
