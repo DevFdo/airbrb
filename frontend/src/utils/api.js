@@ -60,6 +60,7 @@ export const fetchListingDetails = async (id) => {
   }
 }
 
+
 // Create a listing
 export const createListing = async (body) => {
   const token = localStorage.getItem('token');

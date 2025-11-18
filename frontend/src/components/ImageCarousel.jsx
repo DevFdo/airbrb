@@ -5,7 +5,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 const PLACEHOLDER_THUMBNAIL = 'https://media.cntraveler.com/photos/67f53f14f89653830ad19b2b/3:2/w_960,h_640,c_limit/Airbnb-05d669ab-3115-4fce-b5fd-0de123aaf780.jpg';
 
-const ImageCarousel = ({ images }) => {
+const ImageCarousel = ({ images = [] }) => {
   const [index, setIndex] = useState(0);
   const validImages = images.length > 0 ? images : [""];
 

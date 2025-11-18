@@ -35,12 +35,35 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish,onC
   const slides = hasRealThumbnail ? [thumbnail, ...images.filter((img) => img !== thumbnail)] : [];
 
 
-  const prevImg = () => {
+  const prevImg = (e) => {
+    e.stopPropagation();
     setImgIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  const nextImg = () => {
+  const nextImg = (e) => {
+    e.stopPropagation();
     setImgIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  };
+
+  // handler wrappers
+  const handleEditClick = (e) => {
+    e.stopPropagation(); // ← STOP event from reaching Card
+    onEdit();
+  };
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation(); // ← STOP event from reaching Card
+    onDelete();
+  };
+
+  const handlePublishClick = (e) => {
+    e.stopPropagation(); // ← STOP event from reaching Card
+    onPublish();
+  };
+
+  const handleUnpublishClick = (e) => {
+    e.stopPropagation(); // ← STOP event from reaching Card
+    onUnpublish();
   };
 
   return (
@@ -145,21 +168,21 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish,onC
       </CardContent>
       <CardActions>
         <Tooltip title="Edit listing">
-          <IconButton onClick={onEdit}>
+          <IconButton onClick={handleEditClick}>
             <EditIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Delete listing">
-          <IconButton onClick={onDelete}>
+          <IconButton onClick={handleDeleteClick}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
         {isPublished ? (
-          <Button startIcon={<PublicOffIcon />} size="small" onClick={onUnpublish}>
+          <Button startIcon={<PublicOffIcon />} size="small" onClick={handleUnpublishClick}>
             Unpublish
           </Button>
         ) : (
-          <Button startIcon={<PublicIcon />} size="small" onClick={onPublish}>
+          <Button startIcon={<PublicIcon />} size="small" onClick={handlePublishClick}>
             Publish
           </Button>
         )}
