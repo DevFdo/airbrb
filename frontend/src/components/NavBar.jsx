@@ -60,6 +60,7 @@ export default function NavBar() {
         setTimeout(() => {
           navigate('/');
         }, 1000);
+
       }
     } catch (err) {
       setSnackMsg('Could not log out: ' + (err.response?.data?.error || err.message));
@@ -120,7 +121,7 @@ export default function NavBar() {
                     My Hosted Listings
                   </MenuItem>
                   <MenuItem onClick={handleLogout}>
-                  Log out
+                    Log out
                   </MenuItem>
                 </Menu>
               </div>
