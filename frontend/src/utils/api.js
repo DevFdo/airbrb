@@ -114,6 +114,7 @@ export const unpublishListing = async (id) =>{
   )
 }
 
+// Create a new AirBrb booking for a particular listing
 export const makeBooking = async (id,dateRange,totalPrice) => {
   const token = localStorage.getItem('token');
   await axios.post(`${API_BASE_URL}/bookings/new/${id}`,{
@@ -125,6 +126,7 @@ export const makeBooking = async (id,dateRange,totalPrice) => {
   );
 }
 
+// Get a list of the meta-data for all AirBrb bookings
 export const fetchBookings = async () => {
   const token = localStorage.getItem('token');
   const response = await axios.get(`${API_BASE_URL}/bookings`,
@@ -139,6 +141,7 @@ export const fetchBookings = async () => {
   }
 }
 
+// Post a new listing review
 export const makeReview = async (listingId,bookingId,body) => {
   const token = localStorage.getItem('token');
   await axios.put(`${API_BASE_URL}/listings/${listingId}/review/${bookingId}`
@@ -146,3 +149,25 @@ export const makeReview = async (listingId,bookingId,body) => {
       'Authorization': `Bearer ${token}`},
     });
 }
+
+// Accept an AirBrb booking for the listing
+export const acceptBooking = async (bookingId) => {
+  const token = localStorage.getItem('token');
+  await axios.put(`${API_BASE_URL}/bookings/accept/${bookingId}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+
+// Decline an AirBrb booking for your listing
+export const denyBooking = async (bookingId) => {
+  const token = localStorage.getItem('token');
+  await axios.put(`${API_BASE_URL}/bookings/decline/${bookingId}`, {}, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
