@@ -132,6 +132,79 @@ const BookingRequests = () => {
           </Grid>
         </Grid>
 
+        {/* Booking Requests Table */}
+        <Paper sx={{ p: 2 }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Booking Request History
+          </Typography>
+
+          {bookings.length === 0 ? (
+            <Alert severity="info">No booking requests yet.</Alert>
+          ) : (
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><strong>Guest</strong></TableCell>
+                    <TableCell><strong>Date Range</strong></TableCell>
+                    <TableCell><strong>Nights</strong></TableCell>
+                    <TableCell><strong>Total Price</strong></TableCell>
+                    <TableCell><strong>Status</strong></TableCell>
+                    <TableCell><strong>Actions</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {bookings.map((booking) => (
+                    <TableRow key={booking.id}>
+                      <TableCell>{booking.owner}</TableCell>
+                      <TableCell>
+                        {dayjs(booking.dateRange[0]).format('DD/MM/YYYY')} -{' '}
+                        {dayjs(booking.dateRange[booking.dateRange.length - 1]).format('DD/MM/YYYY')}
+                      </TableCell>
+                      <TableCell>{booking.dateRange.length - 1} nights</TableCell>
+                      <TableCell>${booking.totalPrice}</TableCell>
+                      <TableCell>
+                        <Chip
+                          label={booking.status}
+                          color={getStatusColor(booking.status)}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        {booking.status === 'pending' ? (
+                          <Stack direction="row" spacing={1}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="success"
+                              startIcon={<CheckCircleIcon />}
+                              onClick={() => handleAccept(booking.id)}
+                            >
+                              Accept
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              color="error"
+                              startIcon={<CancelIcon />}
+                              onClick={() => handleDeny(booking.id)}
+                            >
+                              Deny
+                            </Button>
+                          </Stack>
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            {booking.status === 'accepted' ? 'Accepted' : 'Declined'}
+                          </Typography>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Paper>
       </Container>
     </>
   );
