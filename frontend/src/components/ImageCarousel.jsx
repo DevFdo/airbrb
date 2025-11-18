@@ -43,7 +43,7 @@ const ImageCarousel = ({ images }) => {
       )}
 
       <IconButton
-        aria-label="arrow back"
+        aria-label="prev image"
         onClick={handlePrev}
         sx={{
           position: 'absolute',
@@ -57,7 +57,7 @@ const ImageCarousel = ({ images }) => {
       </IconButton>
 
       <IconButton
-        aria-label="arrow forward"
+        aria-label="next image"
         onClick={handleNext}
         sx={{
           position: 'absolute',

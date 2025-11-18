@@ -79,6 +79,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
               <>
                 <IconButton
                   onClick={prevImg}
+                  aria-label="prev image"
                   sx={{
                     position: 'absolute',
                     top: '50%',
@@ -92,6 +93,7 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
                 </IconButton>
                 <IconButton
                   onClick={nextImg}
+                  aria-label="next image"
                   sx={{
                     position: 'absolute',
                     top: '50%',

@@ -57,7 +57,10 @@ export default function NavBar() {
         localStorage.removeItem('token');
         localStorage.removeItem('email');
         setAuth(false);
-        navigate('/');
+        setTimeout(() => {
+          navigate('/');
+        }, 1000);
+
       }
     } catch (err) {
       setSnackMsg('Could not log out: ' + (err.response?.data?.error || err.message));

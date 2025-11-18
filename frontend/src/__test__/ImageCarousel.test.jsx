@@ -32,7 +32,7 @@ describe('ImageCarousel', () => {
 
   it('navigates to next image when next button clicked', () => {
     render(<ImageCarousel images={images} />);
-    const nextButton = screen.getByRole('button', { name: /arrow forward/i });
+    const nextButton = screen.getByRole('button', { name: /next image/i });
     fireEvent.click(nextButton);
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', images[1]);
@@ -41,7 +41,7 @@ describe('ImageCarousel', () => {
 
   it('navigates to previous image when prev button clicked', () => {
     render(<ImageCarousel images={images} />);
-    const prevButton = screen.getByRole('button', { name: /arrow back/i });
+    const prevButton = screen.getByRole('button', { name: /prev image/i });
     fireEvent.click(prevButton);
     const img = screen.getByRole('img');
     // Wraps around to last image
