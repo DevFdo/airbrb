@@ -68,20 +68,44 @@ const Home = () => {
       const ids = await api.fetchListing();
       const details = await Promise.all(ids.map(id => api.fetchListingDetails(id)));
 
-      const publishedOnly = details.filter((listing) => listing.published);
-      setListings(publishedOnly);
-      setFilteredListings(publishedOnly);
 
-      const maxBed = Math.max(...details.map(listing => listing.metadata.bedroom));
+      const published = details.filter(detail => detail.published)
+
+      const sortedPublished = [...published].sort((a, b) =>
+        a.title.localeCompare(b.title)
+      );
+
+      const email = localStorage.getItem('email');
+      let prioritizedListings = sortedPublished;
+
+      if (email) {
+        const allBookings = await api.fetchBookings();
+
+        const bookedListingIds = new Set(
+          allBookings
+            .filter(b => b.owner === email)
+            .map(b => b.listingId)
+        );
+        const booked = sortedPublished.filter(l => bookedListingIds.has(l.id.toString()));
+        const unbooked = sortedPublished.filter(l => !bookedListingIds.has(l.id.toString()));
+
+        prioritizedListings = [...booked, ...unbooked];
+      }
+
+      setListings(prioritizedListings);
+      setFilteredListings(prioritizedListings);
+
+      const maxBed = Math.max(...prioritizedListings.map(listing => listing.metadata.bedroom));
       setMaximumBed(maxBed);
 
-      const minBed = Math.min(...details.map(listing => listing.metadata.bedroom));
+      const minBed = Math.min(...prioritizedListings.map(listing => listing.metadata.bedroom));
       setMinimumBed(minBed);
 
-      const maxPrice = Math.max(...details.map(listing => listing.price));
+      const maxPrice = Math.max(...prioritizedListings.map(listing => listing.price));
       setMaximumPrice(maxPrice);
 
-      const minPrice = Math.min(...details.map(listing => listing.price));
+      const minPrice = Math.min(...prioritizedListings.map(listing => listing.price));
+      setMinimumPrice(minPrice);
       setMinimumPrice(minPrice);
 
       setBedroomRange([minBed, maxBed]);
@@ -167,7 +191,7 @@ const Home = () => {
           <Grid item xs={12}>
             <Paper
               component="form"
-              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center',width: 400}}
+              sx={{ p: '2px 4px', display: 'flex', alignItems: 'center',width: { xs: '100%', sm: 400 }}}
             >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
@@ -274,7 +298,7 @@ const Home = () => {
           </Grid>
         )}
         {!loading && (
-          <Grid container spacing={5} sx={{ mt: 4,mb:4, alignItems: 'center' }}>
+          <Grid container spacing={5} sx={{ mt: 4, mb:4, alignItems: 'center',justifyContent: { xs: 'center', sm: 'flex-start' }}}>
             {filteredListings.length > 0 &&(
               filteredListings.map((listing) => (
                 <Grid item xs={12} sm={6} md={4} key={listing.id}>

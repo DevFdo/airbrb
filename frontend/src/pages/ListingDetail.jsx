@@ -1,8 +1,13 @@
 import {useEffect, useState} from 'react'
 import {useLocation,useNavigate, useParams} from 'react-router-dom';
+import {useMediaQuery} from 'react-responsive';
 import dayjs from 'dayjs'
 
-import {Alert, Box, Button, Chip, CircularProgress, Container, Dialog, DialogTitle, DialogContent, DialogActions, Divider, Link, List, Typography} from "@mui/material";
+import {Alert, Box, Button, Chip, CircularProgress, Container, 
+  Dialog, DialogTitle, DialogContent, DialogActions, Divider, 
+  Link, List,Snackbar, Typography} 
+  from "@mui/material";
+
 import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
 import HotelIcon from '@mui/icons-material/Hotel';
@@ -13,6 +18,8 @@ import ImageCarousel from "../components/ImageCarousel.jsx"
 import ReviewItems from "../components/ReviewItem.jsx"
 import ReviewForm from "../components/ReviewForm.jsx"
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
+import BookingPicker from "../components/BookingPicker.jsx";
+import BookingItem from "../components/BookingItem.jsx";
 
 
 const ListingDetail = () => {
@@ -30,6 +37,12 @@ const ListingDetail = () => {
     },
   ]);
 
+  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [booking, setBooking] = useState([]);
+  const [canReview, setCanReview] = useState(false);
+  const [reviewingId, setReviewingId] = useState(null);
+
   const expandRangesToDates = (ranges) => {
     const allDates = [];
     ranges.forEach((r) => {
@@ -44,6 +57,7 @@ const ListingDetail = () => {
     return allDates;
   };
 
+  const isMobile = useMediaQuery({ maxWidth: 600 });
   const location = useLocation();
   const rawStart = location.state?.startDate;
   const rawEnd = location.state?.endDate;
@@ -62,6 +76,21 @@ const ListingDetail = () => {
     setDetail(data);
   };
 
+  const getMyBookings = async () => {
+    const allBookings = await api.fetchBookings();
+    const myBookings = allBookings.filter(allBooking => {
+      return allBooking.owner===email && allBooking.listingId===listingId;
+    })
+    setBooking(myBookings);
+    const acceptedBooking = myBookings.filter(myBooking => {
+      return myBooking.status === 'accepted';
+    })
+    if(acceptedBooking.length > 0){
+      setCanReview(true);
+      setReviewingId(acceptedBooking[0].id);
+    }
+  }
+
   useEffect(() => {
     void loadDetail();
   }, [listingId]);
@@ -69,7 +98,9 @@ const ListingDetail = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     setAuth(!!token);
-  }, []);
+    if (!token) return;
+    void getMyBookings();
+  },[email, listingId])
 
   const openPublishDialog = () => {
     setAvailabilityRanges([
@@ -114,6 +145,28 @@ const ListingDetail = () => {
       setErrorMsg('Failed to unpublish listing');
     }
   };
+
+
+  const handleCloseDialog = () => {
+    setBookingDialogOpen(false);
+  }
+
+  const handleBookingConfirmed = async () => {
+    setShowConfirmation(true);
+    setTimeout(() => setShowConfirmation(false), 3000);
+  };
+
+  const handleReview= async (payload) => {
+    try {
+      const body = {
+        ...payload,
+      };
+      await api.makeReview(listingId,reviewingId,body);
+      await loadDetail();
+    } catch (err) {
+      console.error(err);
+    }
+  }
   
   return(
     <>
@@ -128,7 +181,7 @@ const ListingDetail = () => {
       )}
       {detail && (
         <Container>
-          <Box display="flex" flexDirection="row" gap={3} p={5}>
+          <Box display="flex" flexDirection={isMobile ? "column" : "row"}  gap={3} p={5}>
             <Box flex={1} sx={{
               display:'flex',
               alignItems: 'center',
@@ -183,6 +236,20 @@ const ListingDetail = () => {
                   </Box>
                 </Box>
               )}
+              {booking.length>0 &&(
+                <List>
+                  {booking.map((item,index) => (
+                    <Box key={index}>
+                      <BookingItem
+                        status={item.status}
+                        startDate={item.dateRange[0]}
+                        endDate={item.dateRange[item.dateRange.length - 1]}
+                      />
+                      {index < booking.length - 1 && <Divider />}
+                    </Box>
+                  ))}
+                </List>
+              )}
               {auth && (
                 email === detail.owner ? (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
@@ -214,8 +281,8 @@ const ListingDetail = () => {
                     )}
                   </Box>
                 ) : (
-                  <Button variant="contained" sx={{ mt: 3 }}>Book Now</Button>
-                  //TODO:A list of My booking status
+                  <Button variant="contained" sx={{ mt: 3 }}
+                    onClick={()=>{setBookingDialogOpen(true)}}>Book Now</Button>
                 )
               )}
               {!auth && (
@@ -229,15 +296,13 @@ const ListingDetail = () => {
             </Box>
           </Box>
           <Box mt={3}>
-            {auth && (
-              email !== detail.owner &&(
-                <Box >
-                  <Typography variant="body1" fontWeight="bold">
-                    Enjoy your stay? Please leave us a review!
-                  </Typography>
-                  <ReviewForm />
-                </Box>
-              )
+            {canReview && (
+              <Box >
+                <Typography variant="body1" fontWeight="bold">
+                  Enjoy your stay? Please leave us a review!
+                </Typography>
+                <ReviewForm onSubmit={handleReview} />
+              </Box>
             )}
             <Typography variant="body1" fontWeight="bold">
               Reviews:
@@ -268,6 +333,23 @@ const ListingDetail = () => {
               </Button>
             </DialogActions>
           </Dialog>
+          <Dialog open={bookingDialogOpen} onClose={() => setBookingDialogOpen(false)} maxWidth="sm" fullWidth>
+            <DialogTitle >Make a Booking!</DialogTitle>
+            <DialogContent>
+              <BookingPicker
+                availability={detail.availability}
+                pricePerNight={detail.price}
+                listingId={listingId}
+                onClose={handleCloseDialog}
+                onConfirm={handleBookingConfirmed}
+              />
+            </DialogContent>
+          </Dialog>
+          <Snackbar
+            open={showConfirmation}
+            message="Booking confirmed!"
+            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          />
         </Container>
       )}
     </>

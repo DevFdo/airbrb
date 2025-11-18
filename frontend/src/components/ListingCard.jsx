@@ -3,13 +3,11 @@ import Box from "@mui/material/Box";
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PendingActionsIcon from '@mui/icons-material/PendingActions';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useState } from 'react';
@@ -124,12 +122,6 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
           {reviewNum > 1 && `${reviewNum} Reviews`}
         </Typography>
       </CardContent>
-      <CardActions disableSpacing>
-        <Typography variant="body2" sx={{ color: 'text.secondary'}}>
-          <PendingActionsIcon color="action" sx={{ color: 'action' }} /> Pending
-        </Typography>
-        
-      </CardActions>
     </Card>
   );
 }

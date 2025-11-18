@@ -112,3 +112,36 @@ export const unpublishListing = async (id) =>{
     }
   )
 }
+
+export const makeBooking = async (id,dateRange,totalPrice) => {
+  const token = localStorage.getItem('token');
+  await axios.post(`${API_BASE_URL}/bookings/new/${id}`,{
+    dateRange: dateRange,
+    totalPrice: totalPrice,
+  },
+  {headers: {'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`},}
+  );
+}
+
+export const fetchBookings = async () => {
+  const token = localStorage.getItem('token');
+  const response = await axios.get(`${API_BASE_URL}/bookings`,
+    {headers: {'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`},});
+  if(response.status === 200) {
+    return response.data.bookings;
+  }
+  else{
+    console.log('Error loading bookings');
+    return null;
+  }
+}
+
+export const makeReview = async (listingId,bookingId,body) => {
+  const token = localStorage.getItem('token');
+  await axios.put(`${API_BASE_URL}/listings/${listingId}/review/${bookingId}`
+    ,{review:body},{headers: {'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`},
+    });
+}
