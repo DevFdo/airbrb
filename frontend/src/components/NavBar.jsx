@@ -6,8 +6,11 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import {Button, Menu, MenuItem, Snackbar, Alert} from "@mui/material";
+import HouseIcon from '@mui/icons-material/House';
+import {Button, Menu, MenuItem, Snackbar, Alert,Tooltip} from "@mui/material";
+import Box from "@mui/material/Box";
+import Avatar from "@mui/material/Avatar";
+import {red} from "@mui/material/colors";
 
 import * as api from "../utils/api.js"
 
@@ -15,6 +18,7 @@ export default function NavBar() {
 
   const navigate = useNavigate();
 
+  const email = localStorage.getItem("email");
   const [auth,setAuth] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -64,6 +68,11 @@ export default function NavBar() {
     }
   };
 
+  const handleHome = (e) => {
+    e.preventDefault();
+    navigate('/');
+  }
+
   return (
     <>
       <AppBar position="static">
@@ -72,57 +81,50 @@ export default function NavBar() {
             size="large"
             edge="start"
             color="inherit"
-            aria-label="menu"
-            onClick={handleMenu}
+            aria-label="home"
+            onClick={handleHome}
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <HouseIcon/>
           </IconButton>
-          {auth && (
-            <div>
-              <Menu
-                id="basic-menu"
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                slotProps={{
-                  list: {
-                    'aria-labelledby': 'basic-button',
-                  },
-                }}
-              >
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    navigate('/host/listings');
-                  }}
-                >
-                  My Hosted Listings
-                </MenuItem>
-                <MenuItem
-                  onClick={() => {
-                    handleClose();
-                    navigate('/');
-                  }}
-                >
-                  All Listings
-                </MenuItem>
-              </Menu>
-            </div>
-          )}
-
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           AIRBRB
           </Typography>
           {auth && (
-            <div>
-              <Button
-                color="inherit"
-                onClick={handleLogout}
-                sx={{variant: 'contained'}}>
-                Log out
-              </Button>
-            </div>
+            <Box>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleMenu} sx={{ p: 0 }}>
+                  <Avatar sx={{ bgcolor: red[500] }}  alt="user Avatar">
+                    {email.charAt(0).toUpperCase()}
+                  </Avatar>
+                </IconButton>
+              </Tooltip>
+              <div>
+                <Menu
+                  id="basic-menu"
+                  anchorEl={anchorEl}
+                  open={Boolean(anchorEl)}
+                  onClose={handleClose}
+                  slotProps={{
+                    list: {
+                      'aria-labelledby': 'basic-button',
+                    },
+                  }}
+                >
+                  <MenuItem
+                    onClick={() => {
+                      handleClose();
+                      navigate('/host/listings');
+                    }}
+                  >
+                    My Hosted Listings
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                  Log out
+                  </MenuItem>
+                </Menu>
+              </div>
+            </Box>
           )}
           {!auth && (
             <div>
