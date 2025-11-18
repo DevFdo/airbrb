@@ -108,6 +108,10 @@ const HostedListings = () => {
     navigate(`/detail/${id}`);
   }
 
+  const handleViewBookings = (id) => {
+    navigate(`/booking-requests/${id}`);
+  };
+
   return (
     <>
       <NavBar />
@@ -145,6 +149,7 @@ const HostedListings = () => {
                   onPublish={() => openPublishDialog(listing)}
                   onUnpublish={() => handleUnpublish(listing.id)}
                   onClick={() => handleNavigate(listing.id)}
+                  onViewBookings={() => handleViewBookings(listing.id)}
                 />
               </Grid>
             ))}
