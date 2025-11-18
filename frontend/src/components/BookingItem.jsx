@@ -19,8 +19,8 @@ const BookingItem = ({status,startDate,endDate}) => {
         />
       ):(
         <ListItemText
-        primary={`From ${startDate} to ${endDate}`}
-        secondary={'Accepted'}
+          primary={`From ${startDate} to ${endDate}`}
+          secondary={'Accepted'}
         />
       )}
 

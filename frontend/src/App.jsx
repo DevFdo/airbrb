@@ -9,6 +9,8 @@ import EditListing from './pages/EditListing.jsx';
 
 import ListingDetail  from "./pages/ListingDetail.jsx";
 
+import BookingRequests from './pages/BookingRequests.jsx';
+
 function App() {
   return (
     <Routes>
@@ -22,6 +24,8 @@ function App() {
       <Route path="/host/listings/:id/edit" element={<EditListing />} />
       
       <Route path="/detail/:listingId" element={<ListingDetail />} />
+
+      <Route path="/booking-requests/:id" element={<BookingRequests />} />
     </Routes>
   );
 }

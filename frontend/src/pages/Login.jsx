@@ -37,7 +37,7 @@ const Login = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('email', email);
       setTimeout(() => {
-        navigate(-1);
+        navigate('/')
       }, 1000);
     }
     else{
