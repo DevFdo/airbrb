@@ -49,18 +49,18 @@ describe('ImageCarousel', () => {
     expect(img).toHaveAttribute('alt', 'Listing image 3');
   });
 
-  it('auto-advances images every 3 seconds', () => {
+  it('auto-advances images every 10 seconds', () => {
     render(<ImageCarousel images={images} />);
     const img = screen.getByRole('img');
     expect(img).toHaveAttribute('src', images[0]);
   
     act(() => {
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(10000);
     });
     expect(screen.getByRole('img')).toHaveAttribute('src', images[1]);
   
     act(() => {
-      vi.advanceTimersByTime(3000);
+      vi.advanceTimersByTime(10000);
     });
     expect(screen.getByRole('img')).toHaveAttribute('src', images[2]);
   });
