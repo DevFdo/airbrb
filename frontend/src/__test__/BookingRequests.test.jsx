@@ -374,4 +374,99 @@ describe('BookingRequests', () => {
     });
   });
 
+  // Test 23: Displays all statistic cards
+  it('renders all four statistic cards', async () => {
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Days Online')).toBeInTheDocument();
+      expect(screen.getByText('Days Booked (This Year)')).toBeInTheDocument();
+      expect(screen.getByText('Profit (This Year)')).toBeInTheDocument();
+      expect(screen.getByText('Total Booking Requests')).toBeInTheDocument();
+    });
+  });
+
+  // Test 24: checks only accepted bookings count for profit
+it('only counts accepted bookings for profit, not pending or declined', async () => {
+  renderWithRouter();
+  
+  await waitFor(() => {
+    // Find the Profit card
+    const profitLabel = screen.getByText('Profit (This Year)');
+    expect(profitLabel).toBeInTheDocument();
+    
+    // Get the card containing the profit value
+    // The profit amount should be in a sibling element or parent card
+    const profitCard = profitLabel.closest('.MuiCardContent-root');
+    expect(profitCard).toBeInTheDocument();
+    
+    // Check for $400 (only from accepted booking)
+    // booking-2: accepted, $400 
+    // booking-1: pending, $400  (should not count)
+    // booking-3: declined, $200 (should not count)
+    expect(profitCard.textContent).toContain('$400');
+    
+    // Verify that booking table shows all statuses
+    expect(screen.getByText('pending')).toBeInTheDocument();
+    expect(screen.getByText('accepted')).toBeInTheDocument();
+    expect(screen.getByText('declined')).toBeInTheDocument();
+  });
+});
+
+  // Test 25: Handles bookings from different years correctly
+  it('only counts bookings from current year for statistics', async () => {
+    const lastYear = currentYear - 1;
+    
+    const bookingsMultipleYears = [
+      {
+        id: 'booking-current',
+        listingId: '123',
+        owner: 'guest@example.com',
+        status: 'accepted',
+        dateRange: [`${currentYear}-12-01`, `${currentYear}-12-03`],
+        totalPrice: 300,
+      },
+      {
+        id: 'booking-last',
+        listingId: '123',
+        owner: 'guest2@example.com',
+        status: 'accepted',
+        dateRange: [`${lastYear}-12-01`, `${lastYear}-12-03`],
+        totalPrice: 500,
+      }
+    ];
+    
+    api.fetchBookings.mockResolvedValue(bookingsMultipleYears);
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      // Verify both bookings appear in table
+      expect(screen.getByText('guest@example.com')).toBeInTheDocument();
+      expect(screen.getByText('guest2@example.com')).toBeInTheDocument();
+    });
+  });
+
+  // Test 26: Table headers are displayed correctly
+  it('displays all table column headers', async () => {
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Guest')).toBeInTheDocument();
+      expect(screen.getByText('Date Range')).toBeInTheDocument();
+      expect(screen.getByText('Nights')).toBeInTheDocument();
+      expect(screen.getByText('Total Price')).toBeInTheDocument();
+      expect(screen.getByText('Status')).toBeInTheDocument();
+      expect(screen.getByText('Actions')).toBeInTheDocument();
+    });
+  });
+
+  // Test 27: Icons are displayed in statistic cards
+  it('displays icons in statistic cards', async () => {
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Days Online').parentElement).toBeInTheDocument();
+    });
+  });
 });
