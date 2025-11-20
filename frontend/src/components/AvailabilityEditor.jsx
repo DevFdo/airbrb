@@ -36,6 +36,10 @@ const AvailabilityEditor = ({ availability, setAvailability }) => {
             size="small"
             value={range.start}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              min: dayjs().format('YYYY-MM-DD'),
+              'aria-label': 'Start date for filtering listings'
+            }}
             onChange={(e) => handleChange(idx, 'start', e.target.value)}
           />
           <TextField
@@ -44,6 +48,10 @@ const AvailabilityEditor = ({ availability, setAvailability }) => {
             size="small"
             value={range.end}
             InputLabelProps={{ shrink: true }}
+            inputProps={{
+              min: range.start,
+              'aria-label': 'Start date for filtering listings'
+            }}
             onChange={(e) => handleChange(idx, 'end', e.target.value)}
           />
           <IconButton onClick={() => handleRemove(idx)}>
