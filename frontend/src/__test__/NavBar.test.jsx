@@ -1,4 +1,4 @@
-import { act, render, screen, fireEvent } from '@testing-library/react';
+import { act, render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import NavBar from '../components/NavBar';
 import * as api from '../utils/api';
@@ -67,24 +67,4 @@ describe('NavBar', () => {
     expect(screen.getByText(/Log out/i)).toBeVisible();
   });
 
-  //TODO: Please have this repaired or delete the set time out for snack bar.
-  // Commented due to error
-  /*
-  it('after log out is clicked, navigates home page', async () => {
-    localStorage.setItem('token', 'fake-token');
-    localStorage.setItem('email', 'johnsmith@123com');
-    api.logout.mockResolvedValue({ status: 200 });
-
-    render(<MemoryRouter><NavBar /></MemoryRouter>);
-
-    fireEvent.click(screen.getByRole('button', { name: /Open settings/i }));
-
-    fireEvent.click(screen.getByText(/Log out/i));
-
-    await act(async () => {
-      vi.advanceTimersByTime(1000);
-      await Promise.resolve();
-    });
-    expect(navigateMock).toHaveBeenCalledWith('/');
-  });*/
 });
