@@ -8,7 +8,7 @@ vi.mock('../utils/api', () => ({
 }));
 
 describe('BookingPicker', () => {
-  const availability = ['2025-11-20', '2025-11-21', '2025-11-22'];
+  const availability = ['2025-11-20', '2025-11-21', '2025-11-22','2025-11-25','2025-11-26'];
   const pricePerNight = 100;
   const listingId = 'listing-123';
   const onClose = vi.fn();
@@ -52,6 +52,26 @@ describe('BookingPicker', () => {
     });
 
     expect(await screen.findByText(/2 nights · Total: \$200/i)).toBeVisible();
+  });
+
+  it('disables Confirm Booking when date range is not valid', () => {
+    render(
+      <BookingPicker
+        listingId={listingId}
+        availability={availability}
+        pricePerNight={pricePerNight}
+        onClose={onClose}
+        onConfirm={onConfirm}
+      />
+    );
+    fireEvent.change(screen.getByLabelText(/Start Date/i), {
+      target: { value: '2025-11-22' },
+    });
+    fireEvent.change(screen.getByLabelText(/End Date/i), {
+      target: { value: '2025-11-23' },
+    });
+    const confirmButton = screen.getByRole('button', { name: /Confirm Booking/i });
+    expect(confirmButton).toBeDisabled();
   });
 
   it('calls api.makeBooking, onConfirm, and onClose when Confirm Booking clicked', async () => {

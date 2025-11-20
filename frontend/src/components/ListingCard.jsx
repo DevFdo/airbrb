@@ -7,7 +7,6 @@ import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useState } from 'react';
@@ -27,27 +26,25 @@ const ListingCard = ({title,userInitial,thumbnail,reviewNum, youtubeUrl, images 
 
   const [imgIndex, setImgIndex] = useState(0);
 
-  const prevImg = () => {
+  const prevImg = (e) => {
+    e.stopPropagation();
     setImgIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
   };
 
-  const nextImg = () => {
+  const nextImg = (e) => {
+    e.stopPropagation();
     setImgIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
   };
 
   return (
     <Card sx={{ width: 250,cursor: 'pointer'}}
-      onClick={onClick}>
+      onClick={onClick}
+      aria-label={`View details for ${title}`}>
       <CardHeader
         avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+          <Avatar sx={{ bgcolor: red[500] }} aria-label={`user {userInitial}`}>
             {userInitial}
           </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
         }
         title={title}
       />

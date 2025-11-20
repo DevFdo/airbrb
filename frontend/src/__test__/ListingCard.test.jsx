@@ -103,4 +103,26 @@ describe('ListingCard', () => {
     fireEvent.click(screen.getByText(title));
     expect(onClick).toHaveBeenCalled();
   });
+
+  it('does not trigger onClick when chevron buttons are clicked', () => {
+    
+    const onClick = vi.fn();
+
+    render(
+      <ListingCard
+        title={title}
+        userInitial={userInitial}
+        thumbnail={thumbnail}
+        reviewNum={3}
+        youtubeUrl=""
+        images={images}
+        onClick={onClick}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: /prev image/i }));
+    fireEvent.click(screen.getByRole('button', { name: /next image/i }));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+  
 });
