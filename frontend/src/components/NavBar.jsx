@@ -79,6 +79,7 @@ export default function NavBar() {
       <AppBar position="static">
         <Toolbar>
           <IconButton
+            titleAccess="Home"
             size="large"
             edge="start"
             color="inherit"

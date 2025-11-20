@@ -192,6 +192,7 @@ const Home = () => {
             <Paper
               component="form"
               sx={{ p: '2px 4px', display: 'flex', alignItems: 'center',width: { xs: '100%', sm: 400 }}}
+              aria-label="Search destinations. Results update automatically as you type."
             >
               <InputBase
                 sx={{ ml: 1, flex: 1 }}
@@ -207,7 +208,12 @@ const Home = () => {
           </Grid>
         </Grid>
 
-        <Grid container spacing={5} sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
+        <Grid
+          container
+          spacing={5}
+          aria-live="polite"
+          aria-atomic="true"
+          sx={{ mt: 2, justifyContent: 'center', alignItems: 'center' }}>
           <Grid item xs={12} sm={6} md={3}>
             <Stack spacing={2} direction="row" sx={{alignItems:'center'}} >
               <TextField
@@ -217,7 +223,8 @@ const Home = () => {
                 value={startDate}
                 InputLabelProps={{ shrink: true }}
                 inputProps={{
-                  min: dayjs().format('YYYY-MM-DD')
+                  min: dayjs().format('YYYY-MM-DD'),
+                  'aria-label': 'Start date for filtering listings'
                 }}
                 onChange={(e) => {
                   const newStart = e.target.value;
@@ -233,7 +240,10 @@ const Home = () => {
                 size="small"
                 value={endDate}
                 InputLabelProps={{ shrink: true }}
-                inputProps={{min: startDate,}}
+                inputProps={{
+                  min: startDate,
+                  'aria-label': 'End date for filtering listings'
+                }}
                 onChange={(e) => setEndDate(e.target.value)}
               />
               {isFilteringDate && (
@@ -255,6 +265,8 @@ const Home = () => {
                 { value: minimumBed, label: `${minimumBed}` },
                 { value: maximumBed, label: `${maximumBed}` }
               ]}
+              aria-labelledby="bedroom-slider-label"
+              aria-valuetext={`${bedroomRange} bedrooms`}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={2}>
@@ -270,6 +282,8 @@ const Home = () => {
                 { value: minimumPrice, label: `$${minimumPrice}` },
                 { value: maximumPrice, label: `$${maximumPrice}` }
               ]}
+              aria-labelledby="price-slider-label"
+              aria-valuetext={`${priceRange} price`}
             />
           </Grid>
           <Grid item xs={12} sm={6} md={2}>
@@ -280,6 +294,13 @@ const Home = () => {
                 sortMode === 'none' ? <SortIcon /> :
                   sortMode === 'desc' ? <ArrowDownwardIcon /> :
                     <ArrowUpwardIcon />
+              }
+              aria-label={
+                sortMode === 'none'
+                  ? 'No sort applied. Activate to sort ascending.'
+                  : sortMode === 'desc'
+                    ? 'Currently sorted descending. Activate to sort ascending.'
+                    : 'Currently sorted ascending. Activate to sort descending.'
               }
             >
               {sortMode === 'none' && 'No Sort Applied'}
@@ -298,7 +319,11 @@ const Home = () => {
           </Grid>
         )}
         {!loading && (
-          <Grid container spacing={5} sx={{ mt: 4, mb:4, alignItems: 'center',justifyContent: { xs: 'center', sm: 'flex-start' }}}>
+          <Grid container 
+            spacing={5}
+            aria-live="polite"
+            aria-atomic="true"
+            sx={{ mt: 4, mb:4, alignItems: 'center',justifyContent: { xs: 'center', sm: 'flex-start' }}}>
             {filteredListings.length > 0 &&(
               filteredListings.map((listing) => (
                 <Grid item xs={12} sm={6} md={4} key={listing.id}>

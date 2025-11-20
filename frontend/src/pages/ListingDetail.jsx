@@ -205,14 +205,27 @@ const ListingDetail = () => {
                 flexDirection: 'column',
                 justifyContent: 'center',
               }}>
-              <Typography variant="h3" gutterBottom>{detail.title}</Typography>
+              <Typography
+                variant="h3"
+                gutterBottom
+                aria-label={`Listing:${detail.title}`}
+              >{detail.title}</Typography>
   
-              <Typography variant="h5" color="text.secondary">
+              <Typography
+                variant="h5"
+                color="text.secondary"
+                aria-label={
+                  startDate && endDate
+                    ? `Price for selected stay: $${detail.totalPrice}`
+                    : `Price per night: $${detail.price}`
+                }
+              >
                 {startDate && endDate
                   ? `Price per stay: $${detail.totalPrice}`
                   : `Price per night: $${detail.price}`}
               </Typography>
-              <Typography variant="body1" mt={2}>
+              <Typography variant="body1" mt={2}
+                aria-label={`Address: ${detail.address?.street}, ${detail.address?.city}, ${detail.address?.state}, ${detail.country?.country}`}>
                 <Typography component="span" fontWeight="bold">Address:</Typography>{' '}
                 {detail.address?.street}, {detail.address?.city}, {detail.address?.state}, {detail.country?.country}
               </Typography>
@@ -220,7 +233,8 @@ const ListingDetail = () => {
                 <Typography component="span" fontWeight="bold">Type:</Typography>{' '}
                 {detail.metadata.type}
               </Typography>
-              <Typography variant="body2" mt={1}>
+              <Typography variant="body2" mt={1}
+                aria-label={`Facility: ${detail.metadata.bed} beds, ${detail.metadata.bedroom} bedrooms, ${detail.metadata.bathroom} bathrooms`}>
                 <Typography component="span" fontWeight="bold">Facility:</Typography>{' '}
                 <HotelIcon
                   titleAccess="number of beds"
@@ -236,7 +250,9 @@ const ListingDetail = () => {
                 {detail.metadata.bathroom}
               </Typography>
               {detail.metadata.amenities &&(
-                <Box>
+                <Box
+                  role="region"
+                  aria-label={`Amenities: ${detail.metadata.amenities.join(', ')}`}>
                   <Typography variant="body1" mt={1} fontWeight="bold" >Amenities:</Typography>
                   <Box display="flex" flexWrap="wrap" gap={1}>
                     {detail.metadata.amenities.map((label, index) => (
@@ -247,7 +263,8 @@ const ListingDetail = () => {
                 </Box>
               )}
 
-              <Stack direction="row" mt={2} spacing={1} alignItems="center" sx={{ mb: 2 }}>
+              <Stack direction="row" mt={2} spacing={1} alignItems="center" sx={{ mb: 2 }}
+                aria-label={`Average rating ${calculateAverageRating(detail.reviews).toFixed(1)} out of 5 from ${detail.reviews?.length || 0} reviews`}>
                 {Array.from({ length: 5 }).map((_, index) => {
                   const avg = calculateAverageRating(detail.reviews);
                   const diff = avg - index;
