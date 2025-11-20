@@ -74,7 +74,9 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish, on
 
   return (
     <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
-      onClick={onClick}>
+      onClick={onClick}
+      aria-label={`View details for ${listing.title}`}
+    >
       <CardHeader title={listing.title} subheader={propertyType} />
 
       <CardMedia>
@@ -143,7 +145,8 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish, on
       </CardMedia>
       
       <CardContent sx={{ flexGrow: 1 }}>
-        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}
+          aria-label={`Average rating ${avg.toFixed(1)} out of 5 from ${reviews?.length || 0} reviews`}>
           {Array.from({ length: 5 }).map((_, index) => {
             const starValue = index + 1;          
             const diff = avg - index;
@@ -164,7 +167,9 @@ const HostListingCard = ({ listing, onEdit, onDelete, onPublish, onUnpublish, on
             {avg.toFixed(1)} ({reviews.length} reviews)
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={1} sx={{ mb: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ mb: 1 }}
+          role="group"
+          aria-label="Listing facilities">
           <Chip size="small" label={`${beds} beds`} />
           <Chip size="small" label={`${bathrooms} bathrooms`} />
         </Stack>

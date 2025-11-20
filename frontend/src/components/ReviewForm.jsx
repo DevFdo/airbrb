@@ -31,6 +31,8 @@ const ReviewForm = ({onSubmit}) => {
           value={score}
           onChange={(e, newValue) => setScore(newValue)}
           sx={{ mb: 1 }}
+          aria-label="Listing rating"
+          aria-valuetext={`${score} out of 5 stars`}
         />
         <TextField
           fullWidth
