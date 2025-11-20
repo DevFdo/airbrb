@@ -98,7 +98,8 @@ const BookingRequests = () => {
       await api.acceptBooking(bookingId);
       setSuccessMsg('Booking accepted successfully!');
       setTimeout(() => setSuccessMsg(''), 3000);
-      await fetchData(); // Refresh data
+      // Refresh data
+      await fetchData(); 
     } catch (_err) {
       setErrorMsg('Failed to accept booking');
       setTimeout(() => setErrorMsg(''), 3000);
@@ -110,7 +111,8 @@ const BookingRequests = () => {
       await api.denyBooking(bookingId);
       setSuccessMsg('Booking declined successfully!');
       setTimeout(() => setSuccessMsg(''), 3000);
-      await fetchData(); // Refresh data
+      // Refresh data
+      await fetchData(); 
     } catch (_err) {
       setErrorMsg('Failed to decline booking');
       setTimeout(() => setErrorMsg(''), 3000);
