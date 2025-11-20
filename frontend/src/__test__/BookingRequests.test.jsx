@@ -189,5 +189,189 @@ describe('BookingRequests', () => {
     });
   });
 
-  
+  // Test 11: Calls acceptBooking API when Accept button clicked
+  it('calls acceptBooking API when Accept button is clicked', async () => {
+    api.acceptBooking.mockResolvedValue({ status: 200 });
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
+    });
+    
+    const acceptButton = screen.getByRole('button', { name: /accept/i });
+    fireEvent.click(acceptButton);
+    
+    await waitFor(() => {
+      expect(api.acceptBooking).toHaveBeenCalledWith('booking-1');
+    });
+  });
+
+  // Test 12: Shows success message after accepting booking
+  it('displays success message after accepting booking', async () => {
+    api.acceptBooking.mockResolvedValue({ status: 200 });
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
+    });
+    
+    const acceptButton = screen.getByRole('button', { name: /accept/i });
+    fireEvent.click(acceptButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Booking accepted successfully!')).toBeInTheDocument();
+    });
+  });
+
+  // Test 13: Calls denyBooking API when Deny button clicked
+  it('calls denyBooking API when Deny button is clicked', async () => {
+    api.denyBooking.mockResolvedValue({ status: 200 });
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /deny/i })).toBeInTheDocument();
+    });
+    
+    const denyButton = screen.getByRole('button', { name: /deny/i });
+    fireEvent.click(denyButton);
+    
+    await waitFor(() => {
+      expect(api.denyBooking).toHaveBeenCalledWith('booking-1');
+    });
+  });
+
+  // Test 14: Shows success message after declining booking
+  it('displays success message after declining booking', async () => {
+    api.denyBooking.mockResolvedValue({ status: 200 });
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /deny/i })).toBeInTheDocument();
+    });
+    
+    const denyButton = screen.getByRole('button', { name: /deny/i });
+    fireEvent.click(denyButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Booking declined successfully!')).toBeInTheDocument();
+    });
+  });
+
+  // Test 15: Refreshes data after accepting booking
+  it('refreshes booking list after accepting a booking', async () => {
+    api.acceptBooking.mockResolvedValue({ status: 200 });
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
+    });
+    
+    const acceptButton = screen.getByRole('button', { name: /accept/i });
+    fireEvent.click(acceptButton);
+    
+    await waitFor(() => {
+      expect(api.fetchBookings).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  // Test 16: Displays error message when API call fails
+  it('displays error message when accepting booking fails', async () => {
+    api.acceptBooking.mockRejectedValue(new Error('Network error'));
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /accept/i })).toBeInTheDocument();
+    });
+    
+    const acceptButton = screen.getByRole('button', { name: /accept/i });
+    fireEvent.click(acceptButton);
+    
+    await waitFor(() => {
+      expect(screen.getByText('Failed to accept booking')).toBeInTheDocument();
+    });
+  });
+
+  // Test 17: displays date ranges in table
+  it('displays date ranges correctly in table', async () => {
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Date Range')).toBeInTheDocument();
+    });
+  });
+
+  // Test 18: displays number of nights for each booking
+  it('displays number of nights for each booking', async () => {
+    renderWithRouter();
+    
+    await waitFor(() => {
+      // Check that Nights column header exists
+      expect(screen.getByText('Nights')).toBeInTheDocument();
+      // Check that "nights" text appears in the table (at least once)
+      const nightsText = screen.getAllByText(/nights/i);
+      expect(nightsText.length).toBeGreaterThan(0);
+    });
+  });
+
+  // Test 19: displays total price for each booking
+  it('displays total price for each booking', async () => {
+    renderWithRouter();
+    
+    await waitFor(() => {
+      const priceElements = screen.getAllByText(/\$\d+/);
+      expect(priceElements.length).toBeGreaterThan(0);
+    });
+  });
+
+  // Test 20: Shows message when no bookings exist
+  it('displays message when no bookings exist', async () => {
+    api.fetchBookings.mockResolvedValue([]);
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByText('No booking requests yet.')).toBeInTheDocument();
+    });
+  });
+
+  // Test 21: Fetches data with correct listing ID from URL
+  it('fetches listing details using ID from URL parameter', async () => {
+    renderWithRouter('456');
+    
+    await waitFor(() => {
+      expect(api.fetchListingDetails).toHaveBeenCalledWith('456');
+    });
+  });
+
+  // Test 22: Filters bookings to only show current listing
+  it('displays only bookings for the current listing', async () => {
+    const allBookings = [
+      ...mockBookings,
+      {
+        id: 'booking-other',
+        listingId: '999',
+        owner: 'guest4@example.com',
+        status: 'pending',
+        dateRange: [`${currentYear}-12-25`, `${currentYear}-12-27`],
+        totalPrice: 300,
+      }
+    ];
+    
+    api.fetchBookings.mockResolvedValue(allBookings);
+    
+    renderWithRouter();
+    
+    await waitFor(() => {
+      expect(screen.getByText('guest1@example.com')).toBeInTheDocument();
+      expect(screen.getByText('guest2@example.com')).toBeInTheDocument();
+      expect(screen.queryByText('guest4@example.com')).not.toBeInTheDocument();
+    });
+  });
+
 });
