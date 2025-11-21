@@ -12,10 +12,6 @@ import BathtubIcon from '@mui/icons-material/Bathtub';
 import BedIcon from '@mui/icons-material/Bed';
 import HotelIcon from '@mui/icons-material/Hotel';
 
-import StarIcon from '@mui/icons-material/Star';
-import StarHalfIcon from '@mui/icons-material/StarHalf';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
-
 import * as api from '../utils/api.js'
 import NavBar from "../components/NavBar.jsx";
 import ImageCarousel from "../components/ImageCarousel.jsx"
@@ -24,6 +20,7 @@ import ReviewForm from "../components/ReviewForm.jsx"
 import AvailabilityEditor from '../components/AvailabilityEditor.jsx';
 import BookingPicker from "../components/BookingPicker.jsx";
 import BookingItem from "../components/BookingItem.jsx";
+import AdvancedRating from '../components/AdvancedRating.jsx';
 
 
 const ListingDetail = () => {
@@ -283,31 +280,12 @@ const ListingDetail = () => {
                 </Box>
               )}
 
-              <Stack direction="row" mt={2} spacing={1} alignItems="center" sx={{ mb: 2 }}
-                aria-label={`Average rating ${calculateAverageRating(detail.reviews).toFixed(1)} out of 5 from ${detail.reviews?.length || 0} reviews`}>
-                {Array.from({ length: 5 }).map((_, index) => {
-                  const avg = calculateAverageRating(detail.reviews);
-                  const diff = avg - index;
-
-                  // Full star
-                  if (diff >= 1) {
-                    return <StarIcon key={index} fontSize="medium" sx={{ color: '#FFD700' }} />;
-                  }
-                  // Half star
-                  if (diff > 0) {
-                    return <StarHalfIcon key={index} fontSize="medium" sx={{ color: '#FFD700' }} />;
-                  }
-                  // Empty star
-                  return <StarBorderIcon key={index} fontSize="medium" sx={{ color: '#ccc' }} />;
-                })}
-                
-                <Typography variant="body1" fontWeight="bold">
-                  {calculateAverageRating(detail.reviews).toFixed(1)}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ({detail.reviews?.length || 0} {detail.reviews?.length === 1 ? 'review' : 'reviews'})
-                </Typography>
-              </Stack>
+              <Box mt={2} sx={{ mb: 2 }}>
+                <AdvancedRating 
+                  reviews={detail.reviews || []}
+                  averageRating={calculateAverageRating(detail.reviews)}
+                />
+              </Box>
 
               {auth && email !== detail.owner && booking.length > 0 && (
                 <Box sx={{ mt: 3 }}>
@@ -338,7 +316,7 @@ const ListingDetail = () => {
                   </List>
                 </Box>
               )}
-              
+
               {auth && (
                 email === detail.owner ? (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
