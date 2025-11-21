@@ -47,6 +47,8 @@ const ListingDetail = () => {
   const [canReview, setCanReview] = useState(false);
   const [reviewingId, setReviewingId] = useState(null);
 
+  const [bookingsLoading, setBookingsLoading] = useState(false);
+
   const expandRangesToDates = (ranges) => {
     const allDates = [];
     ranges.forEach((r) => {
@@ -86,20 +88,36 @@ const ListingDetail = () => {
     setDetail(data);
   };
 
-  const getMyBookings = async () => {
-    const allBookings = await api.fetchBookings();
-    const myBookings = allBookings.filter(allBooking => {
-      return allBooking.owner===email && allBooking.listingId===listingId;
-    })
-    setBooking(myBookings);
-    const acceptedBooking = myBookings.filter(myBooking => {
-      return myBooking.status === 'accepted';
-    })
-    if(acceptedBooking.length > 0){
-      setCanReview(true);
-      setReviewingId(acceptedBooking[0].id);
+  const refreshBookings = async () => {
+    if (!email || !listingId) return;
+    
+    setBookingsLoading(true);
+    try {
+      const allBookings = await api.fetchBookings();
+      const myBookings = allBookings.filter(allBooking => {
+        return allBooking.owner === email && allBooking.listingId === listingId;
+      });
+      
+      setBooking(myBookings);
+      
+      // Check if user can review
+      const acceptedBooking = myBookings.find(myBooking => 
+        myBooking.status === 'accepted'
+      );
+      
+      if (acceptedBooking) {
+        setCanReview(true);
+        setReviewingId(acceptedBooking.id);
+      } else {
+        setCanReview(false);
+        setReviewingId(null);
+      }
+    } catch (err) {
+      console.error('Failed to fetch bookings:', err);
+    } finally {
+      setBookingsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     void loadDetail();
@@ -109,7 +127,7 @@ const ListingDetail = () => {
     const token = localStorage.getItem('token');
     setAuth(!!token);
     if (!token) return;
-    void getMyBookings();
+    void refreshBookings();
   },[email, listingId])
 
   const openPublishDialog = () => {
@@ -164,6 +182,8 @@ const ListingDetail = () => {
   const handleBookingConfirmed = async () => {
     setShowConfirmation(true);
     setTimeout(() => setShowConfirmation(false), 3000);
+
+    await refreshBookings();
   };
 
   const handleReview= async (payload) => {
@@ -289,20 +309,36 @@ const ListingDetail = () => {
                 </Typography>
               </Stack>
 
-              {booking.length>0 &&(
-                <List>
-                  {booking.map((item,index) => (
-                    <Box key={index}>
-                      <BookingItem
-                        status={item.status}
-                        startDate={item.dateRange[0]}
-                        endDate={item.dateRange[item.dateRange.length - 1]}
-                      />
-                      {index < booking.length - 1 && <Divider />}
-                    </Box>
-                  ))}
-                </List>
+              {auth && email !== detail.owner && booking.length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography variant="h6" fontWeight="bold">
+                      Your Bookings
+                    </Typography>
+                    <Button 
+                      size="small" 
+                      onClick={refreshBookings}
+                      disabled={bookingsLoading}
+                    >
+                      {bookingsLoading ? <CircularProgress size={20} /> : 'Refresh'}
+                    </Button>
+                  </Box>
+                  
+                  <List>
+                    {booking.map((item, index) => (
+                      <Box key={item.id || index}>
+                        <BookingItem
+                          status={item.status}
+                          startDate={item.dateRange[0]}
+                          endDate={item.dateRange[item.dateRange.length - 1]}
+                        />
+                        {index < booking.length - 1 && <Divider />}
+                      </Box>
+                    ))}
+                  </List>
+                </Box>
               )}
+              
               {auth && (
                 email === detail.owner ? (
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
