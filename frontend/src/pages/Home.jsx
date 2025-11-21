@@ -77,7 +77,7 @@ const Home = () => {
 
       const email = localStorage.getItem('email');
       let prioritizedListings = sortedPublished;
-
+      // if the user is logged in
       if (email) {
         const allBookings = await api.fetchBookings();
 
@@ -91,7 +91,7 @@ const Home = () => {
 
         prioritizedListings = [...booked, ...unbooked];
       }
-
+      // Initialize Bed, Price range
       setListings(prioritizedListings);
       setFilteredListings(prioritizedListings);
 
@@ -126,11 +126,15 @@ const Home = () => {
     const term = searchInput.trim().toLowerCase();
 
     const result = listings.filter(listing => {
+      // searching
       const titleMatch = listing.title?.toLowerCase().includes(term);
       const addressMatch = Object.values(listing.address || {})
         .some(field => field?.toLowerCase().includes(term));
+      // price
       const priceMatch = listing.price >= priceRange[0] && listing.price <= priceRange[1];
+      // bed
       const bedMatch= listing.metadata.bedroom >= bedroomRange[0] && listing.metadata.bedroom <= bedroomRange[1];
+      //date range
       let dateMatch = true;
       if (startDate && endDate) {
         setIsFilteringDate(true)
@@ -140,7 +144,7 @@ const Home = () => {
       }
       return (titleMatch || addressMatch)&& priceMatch && bedMatch&&dateMatch;
     });
-
+    //sort
     if (sortMode === 'asc') {
       result.sort((a, b) => getAverageRating(a.reviews) - getAverageRating(b.reviews));
     } else if (sortMode === 'desc') {

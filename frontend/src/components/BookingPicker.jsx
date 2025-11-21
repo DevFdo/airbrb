@@ -10,6 +10,8 @@ import * as api from "../utils/api.js"
 dayjs.extend(isSameOrBefore);
 
 const BookingPicker = ({ listingId,availability,pricePerNight,onClose,onConfirm})=>{
+
+  // Availability to set
   const sortedAvailability = availability
     .map(date => dayjs(date))
     .filter(d => d.isValid())
@@ -24,6 +26,7 @@ const BookingPicker = ({ listingId,availability,pricePerNight,onClose,onConfirm}
 
   const [bookingLength, setBookingLength] = useState(0);
 
+  // Calculate the range of the selected date by input of start and end
   const getRange =()=>{
     const allDates = [];
 
@@ -39,6 +42,7 @@ const BookingPicker = ({ listingId,availability,pricePerNight,onClose,onConfirm}
   }
 
   useEffect(() => {
+    // If there is start and end selected
     if (startDate && endDate) {
       const start = dayjs(startDate);
       const end = dayjs(endDate);
@@ -51,6 +55,7 @@ const BookingPicker = ({ listingId,availability,pricePerNight,onClose,onConfirm}
 
   const totalPrice = bookingLength * pricePerNight;
 
+  // A date range is only valid when all the dates lies in availability
   const isValidRange = () => {
     if (!startDate || !endDate) return false;
 
@@ -76,9 +81,6 @@ const BookingPicker = ({ listingId,availability,pricePerNight,onClose,onConfirm}
     }catch (err) {
       console.error(err);
     }
-
-
-
     onClose();
   };
 
