@@ -20,6 +20,8 @@ export default function NavBar() {
 
   const email = localStorage.getItem("email");
   const [auth,setAuth] = useState(false);
+
+  // For menu
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   // snackbar

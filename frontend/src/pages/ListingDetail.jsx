@@ -28,6 +28,7 @@ import BookingItem from "../components/BookingItem.jsx";
 
 const ListingDetail = () => {
   const navigate = useNavigate();
+
   const { listingId } = useParams();
   const [detail, setDetail] = useState(null);
   const [auth,setAuth] = useState(false);
@@ -69,7 +70,10 @@ const ListingDetail = () => {
     return total / reviews.length;
   };
 
+  // responsiveness
   const isMobile = useMediaQuery({ maxWidth: 600 });
+
+  // From home page, if filter  on date is applied, there should be price per stay added
   const location = useLocation();
   const rawStart = location.state?.startDate;
   const rawEnd = location.state?.endDate;
@@ -77,8 +81,10 @@ const ListingDetail = () => {
   const startDate = rawStart ? dayjs(rawStart) : null;
   const endDate = rawEnd ? dayjs(rawEnd) : null;
 
+  // get detail of the page
   const loadDetail = async () => {
     const data = await api.fetchListingDetails(listingId);
+    // if there used to be filter applied, have total price calculated
     if(startDate&&endDate){
       const stayLength = startDate.isValid() && endDate.isValid()
         ? endDate.diff(startDate, 'day')
@@ -89,11 +95,13 @@ const ListingDetail = () => {
   };
 
   const refreshBookings = async () => {
+    // double check...
     if (!email || !listingId) return;
     
     setBookingsLoading(true);
     try {
       const allBookings = await api.fetchBookings();
+      // Bookings made by me
       const myBookings = allBookings.filter(allBooking => {
         return allBooking.owner === email && allBooking.listingId === listingId;
       });
@@ -124,6 +132,7 @@ const ListingDetail = () => {
   }, [listingId]);
 
   useEffect(() => {
+    // fetch booking only when user is logged in
     const token = localStorage.getItem('token');
     setAuth(!!token);
     if (!token) return;
@@ -133,6 +142,7 @@ const ListingDetail = () => {
   const openPublishDialog = () => {
     setAvailabilityRanges([
       {
+        // initial start date is today
         start: dayjs().format('YYYY-MM-DD'),
         end: dayjs().add(1, 'day').format('YYYY-MM-DD'),
       },
@@ -173,7 +183,6 @@ const ListingDetail = () => {
       setErrorMsg('Failed to unpublish listing');
     }
   };
-
 
   const handleCloseDialog = () => {
     setBookingDialogOpen(false);
@@ -282,7 +291,7 @@ const ListingDetail = () => {
                   </Box>
                 </Box>
               )}
-
+              {/*Average rating */}
               <Stack direction="row" mt={2} spacing={1} alignItems="center" sx={{ mb: 2 }}
                 aria-label={`Average rating ${calculateAverageRating(detail.reviews).toFixed(1)} out of 5 from ${detail.reviews?.length || 0} reviews`}>
                 {Array.from({ length: 5 }).map((_, index) => {
@@ -341,6 +350,8 @@ const ListingDetail = () => {
               
               {auth && (
                 email === detail.owner ? (
+                  // If is the owner, no booking method. User should be provided with 
+                  // edit, delete, publish and unpublish instead
                   <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
                     <Button 
                       variant="outlined" 
@@ -370,10 +381,12 @@ const ListingDetail = () => {
                     )}
                   </Box>
                 ) : (
+                  //If not the owner, click Book Now button to open a booking dialog
                   <Button variant="contained" sx={{ mt: 3 }}
                     onClick={()=>{setBookingDialogOpen(true)}}>Book Now</Button>
                 )
               )}
+              {/*If not logged in, user cannot make booking and is provided a method to login*/}
               {!auth && (
                 <Link href="/login"
                   variant="body2"
@@ -396,6 +409,7 @@ const ListingDetail = () => {
             <Typography variant="body1" fontWeight="bold">
               Reviews:
             </Typography>
+            {/*List of review is here */}
             <List>
               {
                 detail.reviews.map((review,index)=>(
@@ -407,6 +421,7 @@ const ListingDetail = () => {
               }
             </List>
           </Box>
+          {/*Publish dialog Opened upon clicking publish as the owner of the listing*/}
           <Dialog open={publishDialogOpen} onClose={() => setPublishDialogOpen(false)} maxWidth="sm" fullWidth>
             <DialogTitle>Set Availability & Publish</DialogTitle>
             <DialogContent>
@@ -422,6 +437,7 @@ const ListingDetail = () => {
               </Button>
             </DialogActions>
           </Dialog>
+          {/*Booking dialog Opened upon clicking publish as a guest*/}
           <Dialog open={bookingDialogOpen} onClose={() => setBookingDialogOpen(false)} maxWidth="sm" fullWidth>
             <DialogTitle >Make a Booking!</DialogTitle>
             <DialogContent>

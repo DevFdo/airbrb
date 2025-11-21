@@ -10,16 +10,19 @@ const ImageCarousel = ({ images = [] }) => {
   const validImages = images.length > 0 ? images : [""];
 
   useEffect(() => {
+    // Change displayed image every 10 seconds
     const timer = setInterval(() => {
       setIndex(prev => (prev + 1) % validImages.length);
     }, 10000);
     return () => clearInterval(timer);
   }, [validImages.length]);
 
+  // previous image
   const handlePrev = () => {
     setIndex(prev => (prev - 1 + validImages.length) % validImages.length);
   };
 
+  //next image
   const handleNext = () => {
     setIndex(prev => (prev + 1) % validImages.length);
   };
