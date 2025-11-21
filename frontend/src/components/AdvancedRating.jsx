@@ -1,18 +1,5 @@
 import { useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Tooltip, 
-  LinearProgress, 
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  IconButton,
-  Card,
-  CardContent,
-  Divider
-} from '@mui/material';
+import { Box, Typography, Tooltip, LinearProgress, Stack, Dialog, DialogTitle, DialogContent, IconButton, Card, CardContent} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import StarIcon from '@mui/icons-material/Star';
 import StarHalfIcon from '@mui/icons-material/StarHalf';
@@ -22,8 +9,8 @@ const AdvancedRating = ({ reviews, averageRating }) => {
   const [selectedRating, setSelectedRating] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   
-  // Calculate rating breakdown
-  const calculateBreakdown = () => {
+  // Calculates rating breakdown
+  const calculateRatingBreakdown = () => {
     const breakdown = {
       5: { count: 0, percentage: 0 },
       4: { count: 0, percentage: 0 },
@@ -34,15 +21,16 @@ const AdvancedRating = ({ reviews, averageRating }) => {
     
     if (!reviews || reviews.length === 0) return breakdown;
     
-    // Count reviews for each rating
+    // Counts reviews (absolute terms) for each rating
     reviews.forEach(review => {
-      const rating = Math.round(review.score); // Round to nearest star
+      // Round to nearest star
+      const rating = Math.round(review.score);
       if (breakdown[rating] !== undefined) {
         breakdown[rating].count++;
       }
     });
     
-    // Calculate percentages
+    // Calculates percentage terms for each rating
     const total = reviews.length;
     Object.keys(breakdown).forEach(star => {
       breakdown[star].percentage = total > 0 
@@ -53,9 +41,9 @@ const AdvancedRating = ({ reviews, averageRating }) => {
     return breakdown;
   };
   
-  const breakdown = calculateBreakdown();
+  const breakdown = calculateRatingBreakdown();
   
-  // Filter reviews by selected rating
+  // Filters the reviews by selected rating
   const filteredReviews = selectedRating 
     ? reviews.filter(r => Math.round(r.score) === selectedRating)
     : [];
@@ -70,8 +58,8 @@ const AdvancedRating = ({ reviews, averageRating }) => {
     setSelectedRating(null);
   };
   
-  // Render star display
-  const renderStars = () => {
+  // Renders the star display (full star / half star or empty star)
+  const renderDisplayOfStars = () => {
     return Array.from({ length: 5 }).map((_, index) => {
       const avg = averageRating;
       const diff = avg - index;
@@ -151,7 +139,7 @@ const AdvancedRating = ({ reviews, averageRating }) => {
           sx={{ cursor: 'pointer' }}
           aria-label={`Average rating ${averageRating.toFixed(1)} out of 5 from ${reviews?.length || 0} reviews`}
         >
-          {renderStars()}
+          {renderDisplayOfStars()}
           <Typography variant="body1" fontWeight="bold">
             {averageRating.toFixed(1)}
           </Typography>
