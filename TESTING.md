@@ -4,5 +4,7 @@ To do component testing for
 - Image Carousel
 - Listing Card
 - NavBar
+- Booking Requests
+- Listing Form
 
 run `npm run test`
