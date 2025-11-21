@@ -161,6 +161,69 @@ const AdvancedRating = ({ reviews, averageRating }) => {
         </Stack>
       </Tooltip>
       
+      {/* Modal for Filtered Reviews */}
+      <Dialog 
+        open={modalOpen} 
+        onClose={handleCloseModal}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Box>
+              <Typography variant="h6">
+                {selectedRating} Star Reviews
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {filteredReviews.length} {filteredReviews.length === 1 ? 'review' : 'reviews'}
+              </Typography>
+            </Box>
+            <IconButton onClick={handleCloseModal} aria-label="close">
+              <CloseIcon />
+            </IconButton>
+          </Stack>
+        </DialogTitle>
+        
+        <DialogContent dividers>
+          <Stack spacing={2}>
+            {filteredReviews.length === 0 ? (
+              <Typography align="center" color="text.secondary">
+                No reviews with this rating yet.
+              </Typography>
+            ) : (
+              filteredReviews.map((review, index) => (
+                <Card key={index} variant="outlined">
+                  <CardContent>
+                    <Stack spacing={1}>
+                      <Stack direction="row" justifyContent="space-between" alignItems="center">
+                        <Stack direction="row" spacing={0.5}>
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <StarIcon 
+                              key={i}
+                              sx={{ 
+                                fontSize: 18,
+                                color: i < review.score ? '#FFD700' : '#ccc' 
+                              }} 
+                            />
+                          ))}
+                        </Stack>
+                        <Typography variant="caption" color="text.secondary">
+                          {review.reviewer || 'Anonymous'}
+                        </Typography>
+                      </Stack>
+                      {review.comment && (
+                        <Typography variant="body2">
+                          {review.comment}
+                        </Typography>
+                      )}
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </Stack>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
