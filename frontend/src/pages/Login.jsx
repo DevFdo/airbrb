@@ -1,6 +1,5 @@
 import {useState} from 'react';
 import { useNavigate } from 'react-router-dom';
-
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Link from "@mui/material/Link";
@@ -10,18 +9,16 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
-
 import * as api from "../utils/api.js"
 
 const Login = () => {
-    
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
   const [snackSeverity, setSnackSeverity] = useState('success');
+  const [loading, setLoading] = useState(false);
 
   const handleSnackClose = () => {
     setSnackOpen(false);
@@ -29,21 +26,43 @@ const Login = () => {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await api.login(email,password);
-    if (response.status === 200) {
-      setSnackMsg('Successfully logged in');
-      setSnackSeverity('success');
-      setSnackOpen(true);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('email', email);
-      setTimeout(() => {
-        navigate('/')
-      }, 1000);
-    }
-    else{
-      setSnackMsg('Cannot log in: ' + (response.data?.error || 'Unknown error'));
+    
+    // Validate inputs
+    if (!email.trim()) {
+      setSnackMsg('Please enter your email address');
       setSnackSeverity('error');
       setSnackOpen(true);
+      return;
+    }
+    
+    if (!password) {
+      setSnackMsg('Please enter your password');
+      setSnackSeverity('error');
+      setSnackOpen(true);
+      return;
+    }  
+    setLoading(true);
+    
+    try {
+      const response = await api.login(email, password);
+      
+      // Success
+      setSnackMsg('Successfully logged in');
+      setSnackSeverity('success');
+      setSnackOpen(true);    
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('email', email);     
+      setTimeout(() => {
+        navigate('/');
+      }, 1000);
+      
+    } catch (_err) {
+      setSnackMsg('Failed to log in: Incorrect email or password entered');
+      setSnackSeverity('error');
+      setSnackOpen(true);
+      
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,6 +97,7 @@ const Login = () => {
               name="email"
               autoFocus
               onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
             />
             <TextField
               margin="normal"
@@ -88,14 +108,16 @@ const Login = () => {
               type="password"
               id="password"
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
-              Log In
+              {loading ? 'Logging In...' : 'Log In'}
             </Button>
             <Grid container>
               <Grid item>
