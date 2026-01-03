@@ -1,43 +1,17 @@
-# Assessment 4 - ReactJS: AirBrB 🏠
-
-This assignment is due _Friday 21st November, 10pm_.
+# ReactJS: AirBrB 🏠
 
 1. Background & Motivation
 2. The Task (Frontend)
 3. The Support (Backend)
-4. Constraints & Assumptions
-5. Teamwork
-6. Marking Criteria
-7. Originality of Work
-8. Submission
-9. Late Submission Policy
-
-## 0. Change Log
-
-28/10/25 - Due date typo was updated (wrong day, correct date)
-
-18/11/25 - Added clarifications for ascending/descending sort order
-
-## Compulsory setup
-
-Please run ./util/setup.sh in your terminal before you begin. This will set up some checks in relation to the "Git Commit Requirements". If you ran this script before the MR rolled out specified in changelog, please run it again.
-It's important to note that you should **NOT** use any pre-built web app templates or any AI web app creators for this assignment.
 
 ## 2. Your Task - Airbrb
 
-You (and potentially a friend) are to build a frontend for a provided backend. This frontend shall be built with ReactJS. It shall be a single page application that does not require a refresh for state updates (Failure to make your app a fully single page app will result in significant mark penalties).
+You are to build a frontend for a provided backend. This frontend shall be built with ReactJS. It shall be a single page application that does not require a refresh for state updates 
 
 Features need to be implemented (described below) in order for your ReactJS app to meet the requirements of the task, and to operate with the backend described in 3.2.
 
-1. Anything marked 🙉🙉🙉 only needs to completed by pair-attempts and not individual-attempts. Individual-attempts of pair-features may be eligible for bonus marks [refer to 6. Marking Criteria](#6-marking-criteria)
 
-2. The requirements describe a series of **screens**. Screens can be popups/modals, or entire pages. The use of that language is so that you can choose how you want it to be displayed. A screen is essentially a certain state of your web-based application.
-
-3. All success/error/warning messages shown to users should use appropriate UI components, you are not allowed to use alert throughout this assignment.
-
-**Note**: This assignment, _unlike assignment 3_, has a lot of functionality available whilst not logged in. Logging in just adds extra functionality. If you're unsure what we mean by this behaviour, you can play around with the Airbnb website for comparison.
-
-### 2.1. Feature Set 1. Admin Auth (5%)
+### 2.1. Feature Set 1. Admin Auth
 
 This focuses on the basic user interface to register and log in to the site. Login and registration are required to gain access to making bookings as a guest, leave reviews and to manage your own listings as a host.
 
@@ -70,7 +44,7 @@ This focuses on the basic user interface to register and log in to the site. Log
   - A button exists that will take the user to the screen to view their hosted listings.
   - A button exists that will take the user to the screen to view all listings.
 
-### 2.2. Feature Set 2. Creating & Editing & Publishing a Hosted Listing (11%)
+### 2.2. Feature Set 2. Creating & Editing & Publishing a Hosted Listing
 
 For logged in users, they are able to create their own listings (as a host) that will become visible to all other users who have the option of booking it.
 
@@ -142,7 +116,7 @@ availability: [date1, date2, date3, date4, ...];
 
 - If the listing has more than 1 availability range, aggregate them on the frontend and submit them all to the backend in one go when publishing the listing. (You must handle multiple availablility-ranges for full marks in this section)
 
-### 2.3. Feature Set 3. Landing Page: Listings and Search (9%)
+### 2.3. Feature Set 3. Landing Page: Listings and Search
 
 When the app loads, regardless of whether a user is logged in or not, they can access the landing screen. The landing screen displays a number of listings that you as a guest may be able to book (on another screen). We recommend you create some listings (`2.2`) with one user account, and then create a second user account to build/test `2.3` so that you can view their listing as a potential booking option.
 
@@ -186,7 +160,7 @@ When the app loads, regardless of whether a user is logged in or not, they can a
 - If multiple filters are applied, only sorting the result by alphabetical order is required
 - If no listings match the combined filters, the results area should clearly show that no listings are available.
 
-### 2.4. Feature Set 4. Viewing and Booking Listings (9%)
+### 2.4. Feature Set 4. Viewing and Booking Listings
 
 #### 2.4.1. View a Selected Listing
 
@@ -227,7 +201,7 @@ When the app loads, regardless of whether a user is logged in or not, they can a
 - On hover of star rating a tool tip appears which displays the break down of how many people rated the booking (both in percentage terms and absolute terms) within each star category. (e.g. see Amazon product rating for reference)
 - If you click on a particular star rating, another screen should appear (that can be closed) that shows all of the individual reviews left for that rating.
 
-### 2.5. Feature Set 5. Removing a Listing, Managing Booking Requests (9%)
+### 2.5. Feature Set 5. Removing a Listing, Managing Booking Requests
 
 #### 2.5.1. Removing a live listing
 
@@ -246,7 +220,7 @@ When the app loads, regardless of whether a user is logged in or not, they can a
   - How much profit has this listing made the owner this year
   - (Note: When counting the days and profits, inlcude all the bookings, past or future, that have been accepted for this year)
 
-### 2.6. Feature Set 6. Advanced Features (7%)
+### 2.6. Feature Set 6. Advanced Features
 
 #### 2.6.1 Listing Profits Graph
 
@@ -305,31 +279,6 @@ For **ui testing**, you must:
 7. Logs out of the application successfully
 8. Logs back into the application successfully
 
-- (If working in a pair) also required to write a test for another path through the program, describing the steps and the rationale behind this choice in `TESTING.md`
-- (If working solo) include a short rationale of the testing you have undertaken within `TESTING.md`
-
-#### Advice for Component Testing
-
-- Find a simple primitive component you've written, and if you don't have one, write one. This could include a common button you use, or a popup, or a box, or an input. Often examples of these are just MUI or other library components you might have wrapped slightly and includes some props you've passed in
-- Simply write some unit tests that check that for a given prop input, the component behaves in a certain way (e.g. action or visual display), etc etc
-- E.G. Creating a `MyButton` that wraps a MUI `Button`.
-- E.G. A simple example is the list of bookings. It takes in booking informed we've defined and renders a bunch of MUI ListItems, Checkboxes, TextFields and IconButtons
-- Your app is going to be a set of pages, and those pages are made up of primitive components. But if you don't have layers of components between that it means your code is not well modularised. Another example could be if we said to you - no component should be longer than 50 lines of code. You'd probably go refactor to group common sets of primitives together into a new component.
-
-#### Advice for UI Testing
-
-- For cypress, consider adding `cy.wait(1000)` if necessary to add slight pauses in your tests if you find that the page is rendering slower than cypress is trying to test.
-- If you're having issues using Cypress on WSL2, try following [this guide](https://shouv.medium.com/how-to-run-cypress-on-wsl2-989b83795fb6).
-
-#### Other advice / help
-
-- You can welcome to use `enzyme` for testing if you prefer - as long as everything works by running `npm run test`.
-- One topic that has helped students is [mocking fetch calls with jest](https://medium.com/fernandodof/how-to-mock-fetch-calls-with-jest-a666ae1e7752).
-- The tutor will run an empty (reset) backend when running `npm run test` whilst marking.
-- Some students will run into `enzyme adapter` compatibility issues. If you run into these issues you can either:
-- Use this unofficial React 17 adapter: https://www.npmjs.com/package/@wojtekmaj/enzyme-adapter-react-17; or
-- Downgrade react and react-dom to 16, though this could break other things depending on what other dependencies you're using.
-
 #### Running tests
 
 Tests must be run from inside the `frontend` folder by running `npm run test`. Then you might need to press `a` to run all tests.
@@ -339,8 +288,4 @@ You are welcome to modify the `npm run test` command by updating the `test` scri
 ### 2.9. Other notes
 
 - The port you can use to `fetch` data from the backend is defined in `frontend/src/config.json`
-- [This article may be useful to some students](https://stackoverflow.com/questions/66284286/react-jest-mock-usenavigate)
-- For users of typescript, [follow this guide](https://nw-syd-gitlab.cseunsw.tech/COMP6080/25T3/react-typescript)
 - For images, you can just pass in base64 encoded images
-- For certain requests you may want to "poll" the backend, i.e. have the friend end repeatedly make an API call every 1 second to check for updates.
-- For deployment help & instructions, refer to `deployment.md`
